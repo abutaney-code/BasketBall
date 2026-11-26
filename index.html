@@ -466,6 +466,49 @@
       font-weight: 700;
       color: #fff;
       font-size: 11px;
+      transition: all 0.15s ease;
+    }
+
+    .key-cap.active-action {
+      background: rgba(251, 191, 36, 0.28);
+      border-color: #fde047;
+      color: #fde047;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.45);
+    }
+
+    .key-cap.active-defense {
+      background: rgba(56, 189, 248, 0.26);
+      border-color: #38bdf8;
+      color: #7dd3fc;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.45);
+    }
+
+    .key-cap.active-super {
+      background: rgba(34, 197, 94, 0.32);
+      border-color: #4ade80;
+      color: #86efac;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    }
+
+    .role-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .role-offense {
+      background: rgba(249, 115, 22, 0.25);
+      color: #fdba74;
+      border: 1px solid rgba(249, 115, 22, 0.5);
+    }
+
+    .role-defense {
+      background: rgba(56, 189, 248, 0.22);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.45);
     }
 
     /* On-screen Touch Controls for Tablet/Mobile */
@@ -589,6 +632,15 @@
                 <button class="pill-btn" data-diff="ALLSTAR">ALL-STAR</button>
               </div>
             </div>
+
+            <!-- Match Clock Selector -->
+            <div class="control-group">
+              <span class="group-label">3. Game Clock</span>
+              <div class="pill-row" id="duration-selector">
+                <button class="pill-btn active" data-duration="60">60 SEC</button>
+                <button class="pill-btn" data-duration="90">90 SEC</button>
+              </div>
+            </div>
           </div>
 
           <!-- Dual Roster Pickers -->
@@ -647,25 +699,21 @@
           <h2 class="arcade-title" style="font-size: 32px;">GAME PAUSED</h2>
           <div class="controls-grid-help">
             <div>
-              <div style="color:#38bdf8; font-weight:700; margin-bottom:6px;">PLAYER 1 CONTROLS</div>
-              <div><span class="key-cap">A</span> / <span class="key-cap">D</span> : Move Left / Right</div>
-              <div><span class="key-cap">W</span> : Jump</div>
-              <div><span class="key-cap">S</span> : Dash / Crossover</div>
-              <div><span class="key-cap">X</span> or <span class="key-cap">SPACE</span> : Shoot / Dunk / Steal / Block</div>
-              <div><span class="key-cap">Z</span> : Activate Supershot (100%)</div>
-              <div style="color:#94a3b8; font-size:11px; margin-top:4px;">*In 1P mode, Arrow Keys + Space/Shift also work!</div>
+              <div style="color:#38bdf8; font-weight:700; margin-bottom:6px;">1P / PLAYER 1 CONTROLS</div>
+              <div><span class="key-cap">A</span>/<span class="key-cap">D</span> or <span class="key-cap">◀</span>/<span class="key-cap">▶</span> : Move Left / Right</div>
+              <div><span class="key-cap">W</span> or <span class="key-cap">▲</span> : Jump / Block Shot</div>
+              <div><span class="key-cap">SPACE</span> or <span class="key-cap">J</span> : Shoot / Dunk (Hold &amp; Release)</div>
+              <div><span class="key-cap">SHIFT</span> or <span class="key-cap">K</span> : Dash Crossover / Steal Lunge</div>
+              <div><span class="key-cap">Q</span> or <span class="key-cap">L</span> : Activate Supershot (100%)</div>
             </div>
             <div>
-              <div style="color:#fb7185; font-weight:700; margin-bottom:6px;">PLAYER 2 CONTROLS (2P LOCAL)</div>
-              <div><span class="key-cap">◀</span> / <span class="key-cap">▶</span> : Move Left / Right</div>
-              <div><span class="key-cap">▲</span> : Jump</div>
-              <div><span class="key-cap">▼</span> : Dash / Crossover</div>
-              <div><span class="key-cap">L</span> or <span class="key-cap">ENTER</span> : Shoot / Dunk / Steal / Block</div>
-              <div><span class="key-cap">K</span> : Activate Supershot (100%)</div>
+              <div style="color:#fb7185; font-weight:700; margin-bottom:6px;">2P LOCAL DEDICATED CONTROLS</div>
+              <div><strong>P1:</strong> <span class="key-cap">A</span><span class="key-cap">D</span> Move · <span class="key-cap">W</span> Jump/Block · <span class="key-cap">F</span> Shoot · <span class="key-cap">G</span> Dash/Steal · <span class="key-cap">H</span> Super</div>
+              <div style="margin-top:6px;"><strong>P2:</strong> <span class="key-cap">◀</span><span class="key-cap">▶</span> Move · <span class="key-cap">▲</span> Jump/Block · <span class="key-cap">K</span> Shoot · <span class="key-cap">L</span> Dash/Steal · <span class="key-cap">P</span> Super</div>
             </div>
           </div>
           <div style="font-size:12px; color:#cbd5e1;">
-            <strong>PRO TIPS:</strong> Hold Shoot and release inside the <span style="color:#22c55e; font-weight:700;">GREEN ZONE</span> for high-accuracy swishes! Jump near the rim with the ball and press Shoot to <strong>SLAM DUNK</strong>!
+            <strong>PRO TIPS:</strong> Hold Shoot into the <span style="color:#22c55e; font-weight:700;">GREEN ZONE</span> (tapping early bricks!). On defense, leap with <span style="color:#38bdf8; font-weight:700;">JUMP / BLOCK</span> near the shooter or rim to SWAT shots and dunks!
           </div>
           <div class="modal-actions">
             <button id="btn-resume" class="tipoff-btn" style="font-size:16px; padding:9px 28px;">RESUME</button>
@@ -694,33 +742,19 @@
 
     <!-- Bottom Controls Legend (Desktop) & Touch Controls (Mobile/Tablet) -->
     <div id="bottom-bar">
-      <div class="legend-cluster desktop-legend" id="legend-p1">
-        <span style="color:#38bdf8; font-weight:700;">P1:</span>
-        <span><span class="key-cap">A</span><span class="key-cap">D</span> Move</span>
-        <span><span class="key-cap">W</span> Jump</span>
-        <span><span class="key-cap">S</span> Dash</span>
-        <span><span class="key-cap">X</span>/<span class="key-cap">Space</span> Shoot/Dunk/Steal/Block</span>
-        <span><span class="key-cap">Z</span> Supershot</span>
-      </div>
-      <div class="legend-cluster desktop-legend" id="legend-p2">
-        <span style="color:#fb7185; font-weight:700;">P2:</span>
-        <span><span class="key-cap">◀</span><span class="key-cap">▶</span> Move</span>
-        <span><span class="key-cap">▲</span> Jump</span>
-        <span><span class="key-cap">▼</span> Dash</span>
-        <span><span class="key-cap">L</span>/<span class="key-cap">Enter</span> Action</span>
-        <span><span class="key-cap">K</span> Supershot</span>
-      </div>
+      <div class="legend-cluster desktop-legend" id="legend-p1"></div>
+      <div class="legend-cluster desktop-legend" id="legend-p2"></div>
 
       <!-- Mobile / Tablet Touch Controls for P1 -->
       <div id="touch-controls">
         <div class="touch-pad">
           <button class="touch-btn" data-touch="left">◀</button>
           <button class="touch-btn" data-touch="right">▶</button>
-          <button class="touch-btn" data-touch="dash" style="width:58px;">DASH</button>
+          <button class="touch-btn" data-touch="dash" style="width:68px; font-size:10px;">DASH/STL</button>
         </div>
         <div class="touch-pad">
           <button class="touch-btn" data-touch="super" style="width:62px; border-color:#fbbf24; color:#fbbf24;">SUPER</button>
-          <button class="touch-btn" data-touch="jump" style="width:58px;">JUMP</button>
+          <button class="touch-btn" data-touch="jump" style="width:68px; font-size:10px;">JMP/BLK</button>
           <button class="touch-btn" data-touch="shoot" style="width:66px; background:#ea580c; border-color:#fde047;">SHOOT</button>
         </div>
       </div>
@@ -917,19 +951,36 @@
         playBlock() {
           if (!this.ensureContext()) return;
           const now = this.ctx.currentTime;
+          // Crisp smack noise burst
+          const bufferSize = Math.floor(this.ctx.sampleRate * 0.09);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+          }
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+          const nGain = this.ctx.createGain();
+          nGain.gain.setValueAtTime(0.36, now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          noise.connect(nGain);
+          nGain.connect(this.ctx.destination);
+          noise.start(now);
+
+          // Low punchy impact thud
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(210, now);
-          osc.frequency.exponentialRampToValueAtTime(65, now + 0.16);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(240, now);
+          osc.frequency.exponentialRampToValueAtTime(52, now + 0.18);
 
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+          gain.gain.setValueAtTime(0.34, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
 
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.18);
+          osc.stop(now + 0.2);
         }
 
         playSteal() {
@@ -1049,7 +1100,7 @@
           hairStyle: 'fade_beard',
           hairColor: '#18181b',
           headband: '#FDB927',
-          supershotName: 'Skywalker Mega Dunk',
+          supershotName: 'Skywalker Dunk',
           supershotType: 'MEGA_DUNK',
           trailColors: ['#FDB927', '#7e22ce', '#ffffff']
         },
@@ -1066,7 +1117,7 @@
           hairStyle: 'bald_band',
           hairColor: '#111111',
           headband: '#CE1141',
-          supershotName: 'Airborne Fireball 3PT',
+          supershotName: 'Fireball 3PT',
           supershotType: 'FIREBALL_SHOT',
           trailColors: ['#ef4444', '#f97316', '#fde047']
         },
@@ -1083,8 +1134,8 @@
           hairStyle: 'spiky',
           hairColor: '#111827',
           headband: '#FF2A85',
-          supershotName: 'Lightning Steal & Slam',
-          supershotType: 'LIGHTNING_SLAM',
+          supershotName: 'Neon Fastbreak',
+          supershotType: 'NEON_FASTBREAK',
           trailColors: ['#00f5d4', '#ff2a85', '#ffffff']
         },
         {
@@ -1100,7 +1151,7 @@
           hairStyle: 'curly_fade',
           hairColor: '#27272a',
           headband: '#1D428A',
-          supershotName: 'Logo Splash Bomb',
+          supershotName: 'Logo Splash',
           supershotType: 'SPLASH_BOMB',
           trailColors: ['#38bdf8', '#FFC72C', '#ffffff']
         },
@@ -1134,7 +1185,7 @@
           hairStyle: 'afro',
           hairColor: '#09090b',
           headband: '#CBD5E1',
-          supershotName: 'Ankle-Breaker Dash Shot',
+          supershotName: 'Ankle-Breaker Pull-Up',
           supershotType: 'ANKLE_SHOT',
           trailColors: ['#e2e8f0', '#64748b', '#38bdf8']
         },
@@ -1151,8 +1202,8 @@
           hairStyle: 'waves',
           hairColor: '#1c1917',
           headband: '#E56020',
-          supershotName: 'Solar Flare Dunk',
-          supershotType: 'SOLAR_DUNK',
+          supershotName: 'Solar Fadeaway',
+          supershotType: 'SOLAR_FADEAWAY',
           trailColors: ['#f97316', '#facc15', '#a855f7']
         },
         {
@@ -1222,6 +1273,7 @@
         screen: 'SETUP', // 'SETUP' | 'BRACKET' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'
         mode: '1P_QUICK', // '1P_QUICK' | '1P_TOURNAMENT' | '2P_LOCAL'
         difficulty: 'PRO', // 'ROOKIE' | 'PRO' | 'ALLSTAR'
+        matchDuration: 60, // 60 or 90 seconds
         p1TeamIdx: 0,
         p2TeamIdx: 1,
         tournament: null
@@ -1236,11 +1288,11 @@
       let match = null;
 
       /* =========================================================================
-         5. INPUT HANDLING (KEYBOARD + TOUCH)
+         5. INPUT HANDLING (DECOUPLED KEYBOARD + TOUCH)
          ========================================================================= */
       window.addEventListener('keydown', (e) => {
         const code = e.code;
-        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(code)) {
           e.preventDefault();
         }
         if (!keys[code]) {
@@ -1248,8 +1300,8 @@
         }
         keys[code] = true;
 
-        // Quick Pause Toggle
-        if (code === 'KeyP' || code === 'Escape') {
+        // Pause Toggle (Escape always works; P works in 1P modes since P is P2 Supershot in 2P Local)
+        if (code === 'Escape' || (code === 'KeyP' && appState.mode !== '2P_LOCAL')) {
           if (appState.screen === 'PLAYING') {
             setScreen('PAUSED');
           } else if (appState.screen === 'PAUSED') {
@@ -1269,14 +1321,14 @@
         for (const k in justReleased) delete justReleased[k];
       }
 
-      // Bind Mobile/Tablet Touch Buttons to P1 Keys
+      // Bind Mobile/Tablet Touch Buttons to P1 Decoupled Keys
       const touchMap = {
         left: 'KeyA',
         right: 'KeyD',
         jump: 'KeyW',
-        dash: 'KeyS',
-        shoot: 'KeyX',
-        super: 'KeyZ'
+        dash: 'ShiftLeft',
+        shoot: 'Space',
+        super: 'KeyQ'
       };
 
       document.querySelectorAll('[data-touch]').forEach((btn) => {
@@ -1309,27 +1361,46 @@
       });
 
       function getPlayerInputs(playerIndex) {
-        const is1P = appState.mode !== '2P_LOCAL';
+        const is2P = appState.mode === '2P_LOCAL';
+        if (!is2P) {
+          // 1P Controls (also usable by P1):
+          // Move: A/D or Left/Right | Jump/Block: W or Up | Shoot/Dunk: SPACE or J | Dash/Steal: SHIFT or K | Supershot: Q or L
+          return {
+            left: !!(keys['KeyA'] || keys['ArrowLeft']),
+            right: !!(keys['KeyD'] || keys['ArrowRight']),
+            jumpBlockDown: !!(justPressed['KeyW'] || justPressed['ArrowUp']),
+            shootDown: !!(justPressed['Space'] || justPressed['KeyJ']),
+            shootHeld: !!(keys['Space'] || keys['KeyJ']),
+            shootUp: !!(justReleased['Space'] || justReleased['KeyJ']),
+            dashStealDown: !!(justPressed['ShiftLeft'] || justPressed['ShiftRight'] || justPressed['KeyK']),
+            superDown: !!(justPressed['KeyQ'] || justPressed['KeyL'])
+          };
+        }
+
         if (playerIndex === 0) {
-          const left = keys['KeyA'] || (is1P && keys['ArrowLeft']);
-          const right = keys['KeyD'] || (is1P && keys['ArrowRight']);
-          const jumpDown = justPressed['KeyW'] || (is1P && justPressed['ArrowUp']);
-          const dashDown = justPressed['KeyS'] || (is1P && justPressed['ArrowDown']);
-          const shootHeld = keys['KeyX'] || keys['Space'];
-          const shootDown = justPressed['KeyX'] || justPressed['Space'];
-          const shootUp = justReleased['KeyX'] || justReleased['Space'];
-          const superDown = justPressed['KeyZ'] || (is1P && (justPressed['ShiftLeft'] || justPressed['ShiftRight']));
-          return { left, right, jumpDown, dashDown, shootHeld, shootDown, shootUp, superDown };
+          // 2P Local Player 1: A/D Move, W Jump/Block, F Shoot/Dunk, G Dash/Steal, H Supershot
+          return {
+            left: !!keys['KeyA'],
+            right: !!keys['KeyD'],
+            jumpBlockDown: !!justPressed['KeyW'],
+            shootDown: !!justPressed['KeyF'],
+            shootHeld: !!keys['KeyF'],
+            shootUp: !!justReleased['KeyF'],
+            dashStealDown: !!justPressed['KeyG'],
+            superDown: !!justPressed['KeyH']
+          };
         } else {
-          const left = keys['ArrowLeft'];
-          const right = keys['ArrowRight'];
-          const jumpDown = justPressed['ArrowUp'];
-          const dashDown = justPressed['ArrowDown'];
-          const shootHeld = keys['KeyL'] || keys['Enter'];
-          const shootDown = justPressed['KeyL'] || justPressed['Enter'];
-          const shootUp = justReleased['KeyL'] || justReleased['Enter'];
-          const superDown = justPressed['KeyK'] || justPressed['KeyM'];
-          return { left, right, jumpDown, dashDown, shootHeld, shootDown, shootUp, superDown };
+          // 2P Local Player 2: Left/Right Move, Up Jump/Block, K Shoot/Dunk, L Dash/Steal, P Supershot
+          return {
+            left: !!keys['ArrowLeft'],
+            right: !!keys['ArrowRight'],
+            jumpBlockDown: !!justPressed['ArrowUp'],
+            shootDown: !!justPressed['KeyK'],
+            shootHeld: !!keys['KeyK'],
+            shootUp: !!justReleased['KeyK'],
+            dashStealDown: !!justPressed['KeyL'],
+            superDown: !!justPressed['KeyP']
+          };
         }
       }
 
@@ -1349,9 +1420,12 @@
           facing: index === 0 ? 1 : -1,
           grounded: true,
           score: 0,
-          superMeter: 35, // Starts partially charged for faster arcade excitement
+          superMeter: 25, // Earned via skilled shots, blocks, steals & dunks
           dribblePhase: 0,
           runCycle: 0,
+
+          // Inbound Dribble-In Lock (anti-spam protection after made baskets)
+          dribbleInLock: 0,
 
           // Dash & Crossover
           dashTimer: 0,
@@ -1368,7 +1442,7 @@
 
           // Dunking
           dunking: false,
-          dunkStyle: 'TOMAHAWK', // 'TOMAHAWK' | 'WINDMILL' | 'ALLEY_OOP' | 'MEGA'
+          dunkStyle: 'TOMAHAWK', // 'TOMAHAWK' | 'WINDMILL' | 'ALLEY_OOP' | 'MEGA' | 'NEON_SLASH'
           dunkProgress: 0,
           dunkStartX: 0,
           dunkStartY: 0,
@@ -1377,14 +1451,16 @@
           dunkIsSuper: false,
           rimHangTimer: 0,
 
-          // Defense Actions
+          // Defense Actions (Jump/Block & Steal Lunge)
           stealTimer: 0,
           stealCooldown: 0,
           blockTimer: 0,
           blockCooldown: 0,
+          blockSwatTriggered: false,
 
           // Supershot Active State
           superActiveTimer: 0,
+          neonBoostTimer: 0,
 
           // AI state
           aiTimer: 0,
@@ -1404,7 +1480,7 @@
         RIGHT_HOOP.netWave = 0;
 
         match = {
-          timeLeft: MATCH_DURATION,
+          timeLeft: appState.matchDuration,
           overtime: false,
           shotClock: SHOT_CLOCK_DURATION,
           players: [
@@ -1424,6 +1500,7 @@
             shotPoints: 2,
             isGreenRelease: false,
             isSupershot: false,
+            superType: null,
             superTrailColors: null,
             touchedRim: false,
             pickupCooldown: 0.25,
@@ -1431,6 +1508,7 @@
           },
           inboundTimer: 0,
           inboundTo: null,
+          hitStopTimer: 0,
           screenShake: 0,
           flashAlpha: 0,
           flashColor: '#ffffff',
@@ -1444,6 +1522,7 @@
         };
 
         setScreen('PLAYING');
+        updateDynamicControlHUD(true);
         sfx.playWhistle();
         spawnPopup(W / 2, 260, 'TIP-OFF!', '#fbbf24', 1.35);
       }
@@ -1520,6 +1599,15 @@
         }
       }
 
+      function isDeepBackcourt(playerIdx, x) {
+        // Behind the half-court logo relative to the attacking basket
+        if (playerIdx === 0) {
+          return x < W / 2 - 40;
+        } else {
+          return x > W / 2 + 40;
+        }
+      }
+
       function addSuperMeter(player, amount) {
         player.superMeter = Math.min(100, Math.max(0, player.superMeter + amount));
       }
@@ -1527,8 +1615,9 @@
       function canAttemptDunk(player) {
         const hoop = getAttackingHoop(player.index);
         const distX = Math.abs(player.x - hoop.rimX);
-        const airborne = !player.grounded && player.y < FLOOR_Y - 35;
-        return airborne && distX < 215;
+        const airborne = !player.grounded && player.y < FLOOR_Y - 32;
+        const maxDunkDist = player.neonBoostTimer > 0 ? 265 : 215;
+        return airborne && distX < maxDunkDist;
       }
 
       function startDunk(player, isSuper = false, customStyle = null) {
@@ -1553,6 +1642,8 @@
       }
 
       function beginShotCharge(player) {
+        if (player.dribbleInLock > 0) return;
+
         player.chargingShot = true;
         player.shotCharge = 0;
         player.facing = player.index === 0 ? 1 : -1;
@@ -1570,13 +1661,22 @@
         const oppDist = Math.hypot(player.x - opp.x, player.y - opp.y);
         const contested = oppDist < 95 ? 0.05 : 0;
 
-        const baseWindow = dist > 620 ? 0.14 : (dist > 420 ? 0.18 : 0.22);
-        const windowSize = Math.max(0.11, baseWindow - contested);
+        let baseWindow = dist > 620 ? 0.14 : (dist > 420 ? 0.18 : 0.22);
+        // Deep backcourt penalty: severely narrow sweet spot for full-court spam heaves
+        if (isDeepBackcourt(player.index, player.x)) {
+          baseWindow = 0.06;
+        }
+        // Miami Neon Fastbreak 1.35x shot window bonus within 320px
+        if (player.neonBoostTimer > 0 && dist <= 320) {
+          baseWindow *= 1.35;
+        }
+
+        const windowSize = Math.max(0.06, baseWindow - contested);
         player.shotSweetStart = 0.58;
-        player.shotSweetEnd = 0.58 + windowSize;
+        player.shotSweetEnd = Math.min(0.92, 0.58 + windowSize);
       }
 
-      function releaseJumpShot(player, forceGreen = false, isSupershot = false) {
+      function releaseJumpShot(player, forceGreen = false, isSupershot = false, superType = null) {
         const ball = match.ball;
         if (ball.owner !== player.index) {
           player.chargingShot = false;
@@ -1587,9 +1687,15 @@
         const releaseX = player.x + player.facing * 22;
         const releaseY = player.y - 88;
         const points = isBehindThreePointLine(player.index, player.x) ? 3 : 2;
+        const deepBackcourt = isDeepBackcourt(player.index, player.x);
 
-        const inGreen = forceGreen ||
-          (player.shotCharge >= player.shotSweetStart && player.shotCharge <= player.shotSweetEnd);
+        // Anti-Spam Check: Tapping Shoot (< 18% meter fill) triggers a VERY EARLY brick/airball (< 8% accuracy)
+        const isVeryEarly = !forceGreen && !isSupershot && player.shotCharge < 0.18;
+
+        const inGreen = !isVeryEarly && (
+          forceGreen ||
+          (player.shotCharge >= player.shotSweetStart && player.shotCharge <= player.shotSweetEnd)
+        );
 
         // Compute trajectory toward hoop rim
         const dx = hoop.rimX - releaseX;
@@ -1597,20 +1703,41 @@
         const dist = Math.abs(dx);
 
         // Flight time scales with horizontal distance for a high natural arc
-        let flightTime = Math.max(0.56, Math.min(1.02, 0.52 + dist / 1180));
-        if (isSupershot && player.team.supershotType === 'SPLASH_BOMB') {
-          flightTime += 0.18; // High rainbow bomb!
+        let flightTime = Math.max(0.56, Math.min(1.04, 0.52 + dist / 1180));
+        if (isSupershot && (superType === 'SPLASH_BOMB' || superType === 'SOLAR_FADEAWAY' || superType === 'STEPBACK_METEOR')) {
+          flightTime += 0.18; // High rainbow arc!
         }
 
-        // Aim offset error if not a green release
         let targetX = hoop.rimX;
-        if (!inGreen && !isSupershot) {
+        let effectiveGreen = inGreen || isSupershot;
+
+        if (isVeryEarly) {
+          // Severe brick/airball miss (< 8% lucky bounce chance)
+          effectiveGreen = false;
+          const luckyBounce = Math.random() < 0.06;
+          if (!luckyBounce) {
+            const missSign = Math.random() < 0.5 ? -1 : 1;
+            targetX += missSign * (125 + Math.random() * 95);
+          } else {
+            targetX += (Math.random() - 0.5) * 34;
+          }
+          spawnPopup(player.x, player.y - 125, 'VERY EARLY! (BRICK)', '#f43f5e', 0.95);
+        } else if (deepBackcourt && !isSupershot) {
+          // Severe distance falloff on deep backcourt heaves
+          effectiveGreen = false;
+          const heaveLucky = inGreen && Math.random() < 0.14;
+          if (!heaveLucky) {
+            const missSign = Math.random() < 0.5 ? -1 : 1;
+            targetX += missSign * (110 + Math.random() * 115);
+          }
+          spawnPopup(player.x, player.y - 125, 'DEEP HEAVE!', '#fb923c', 0.9);
+        } else if (!inGreen && !isSupershot) {
           const centerSweet = (player.shotSweetStart + player.shotSweetEnd) * 0.5;
           const timingDiff = player.shotCharge - centerSweet; // negative = early, positive = late
           const opp = match.players[1 - player.index];
           const contestPenalty = Math.hypot(player.x - opp.x, player.y - opp.y) < 95 ? 1.35 : 1.0;
-          const randomJitter = (Math.random() - 0.5) * 26;
-          targetX += timingDiff * 165 * contestPenalty + randomJitter;
+          const randomJitter = (Math.random() - 0.5) * 28;
+          targetX += timingDiff * 175 * contestPenalty + randomJitter;
         }
 
         const finalDx = targetX - releaseX;
@@ -1626,61 +1753,70 @@
         ball.spin = player.facing * -9;
         ball.inFlight = true;
         ball.shotPoints = points;
-        ball.isGreenRelease = inGreen || isSupershot;
+        ball.isGreenRelease = effectiveGreen;
         ball.isSupershot = isSupershot;
+        ball.superType = superType;
         ball.superTrailColors = isSupershot ? player.team.trailColors : null;
         ball.touchedRim = false;
-        ball.pickupCooldown = 0.28;
+        ball.pickupCooldown = 0.24;
         ball.trail = [];
 
         player.chargingShot = false;
         player.shotCharge = 0;
         player.shotAnimTimer = 0.35;
+        player.neonBoostTimer = 0;
 
-        if (inGreen && !isSupershot) {
+        if (effectiveGreen && !isSupershot) {
           spawnPopup(player.x, player.y - 125, 'PERFECT RELEASE!', '#22c55e', 0.92);
         }
       }
 
       function activateSupershot(player) {
-        if (player.superMeter < 100 || match.inboundTimer > 0) return;
+        if (player.superMeter < 100 || match.inboundTimer > 0 || player.dribbleInLock > 0) return;
 
         const opp = match.players[1 - player.index];
         const ball = match.ball;
         const type = player.team.supershotType;
+        const hoop = getAttackingHoop(player.index);
 
-        // Special defensive/steal supershot for Miami Neon ('Lightning Steal & Slam')
-        if (type === 'LIGHTNING_SLAM' && ball.owner !== player.index) {
+        // Player must hold the ball to unleash offensive Supershot
+        if (ball.owner !== player.index) return;
+
+        // NERFED MIAMI NEON SUPERSHOT ("Neon Fastbreak"):
+        // No cross-court teleport or auto-steal. Grants lightning speed boost + 1.35x shot window;
+        // if within 320px of the hoop, launches an electrified high-arc acrobat slash/dunk (blockable at the rim!).
+        if (type === 'NEON_FASTBREAK') {
           player.superMeter = 0;
-          player.superActiveTimer = 0.9;
+          player.superActiveTimer = 0.95;
+          player.neonBoostTimer = 2.8;
+          player.chargingShot = false;
           sfx.playSupershot();
-          match.screenShake = 14;
+          match.screenShake = 11;
           match.flashColor = player.team.secondary;
-          match.flashAlpha = 0.35;
+          match.flashAlpha = 0.26;
+          spawnParticles(player.x, player.y - 50, player.team.trailColors, 24, 320);
 
-          spawnParticles(player.x, player.y - 45, player.team.trailColors, 24, 340);
-          player.x = opp.x;
-          player.y = opp.y;
-          opp.stunTimer = 1.2;
-          ball.owner = player.index;
-          ball.inFlight = false;
-          match.shotClock = SHOT_CLOCK_DURATION;
-
-          spawnPopup(player.x, player.y - 130, 'LIGHTNING STEAL & SLAM!', '#00f5d4', 1.15);
-          startDunk(player, true, 'WINDMILL');
+          const distToHoop = Math.abs(player.x - hoop.rimX);
+          if (distToHoop <= 320) {
+            spawnPopup(player.x, player.y - 135, 'NEON FASTBREAK SLASH!', '#00f5d4', 1.15);
+            startDunk(player, true, 'NEON_SLASH');
+          } else {
+            // Burst of speed toward the hoop so player must drive into range!
+            player.facing = player.index === 0 ? 1 : -1;
+            player.vx = player.facing * 680;
+            player.dashTimer = 0.28;
+            spawnPopup(player.x, player.y - 135, 'NEON FASTBREAK! DRIVE IN!', '#00f5d4', 1.1);
+          }
           return;
         }
-
-        // Otherwise player must hold the ball to unleash offensive Supershot
-        if (ball.owner !== player.index) return;
 
         player.superMeter = 0;
         player.superActiveTimer = 0.95;
         player.chargingShot = false;
         sfx.playSupershot();
-        match.screenShake = 14;
+        match.screenShake = 13;
         match.flashColor = player.team.secondary;
-        match.flashAlpha = 0.32;
+        match.flashAlpha = 0.3;
 
         spawnPopup(player.x, player.y - 135, `${player.team.supershotName.toUpperCase()}!`, '#fde047', 1.15);
         spawnParticles(player.x, player.y - 55, player.team.trailColors, 28, 350);
@@ -1690,43 +1826,47 @@
             startDunk(player, true, 'MEGA');
             break;
 
-          case 'LIGHTNING_SLAM':
-            startDunk(player, true, 'WINDMILL');
-            break;
-
           case 'ALLEY_OOP':
             startDunk(player, true, 'ALLEY_OOP');
             break;
 
-          case 'SOLAR_DUNK':
-            startDunk(player, true, 'TOMAHAWK');
-            break;
-
           case 'ANKLE_SHOT':
-            // Stuns defender in place and fires unblockable fadeaway
-            opp.stunTimer = 1.5;
-            spawnPopup(opp.x, opp.y - 110, 'ANKLE BREAKER!', '#38bdf8', 1.05);
+            // Crossover step-back pull-up jumper
+            if (Math.abs(player.x - opp.x) < 160) {
+              opp.stunTimer = 1.15;
+              spawnPopup(opp.x, opp.y - 110, 'ANKLE BREAKER!', '#38bdf8', 1.05);
+            }
             player.vx = -player.facing * 260;
             player.vy = -780;
             player.grounded = false;
-            releaseJumpShot(player, true, true);
+            releaseJumpShot(player, true, true, type);
+            break;
+
+          case 'SOLAR_FADEAWAY':
+            // High-arc fadeaway jumper
+            player.vx = -player.facing * 240;
+            player.vy = -810;
+            player.grounded = false;
+            releaseJumpShot(player, true, true, type);
             break;
 
           case 'STEPBACK_METEOR':
-            // Step-back shockwave + meteor shot
-            opp.stunTimer = 1.1;
-            player.vx = -player.facing * 320;
+            // Step-back 3PT meteor shot
+            if (Math.abs(player.x - opp.x) < 140) {
+              opp.stunTimer = 0.95;
+            }
+            player.vx = -player.facing * 310;
             player.vy = -800;
             player.grounded = false;
-            releaseJumpShot(player, true, true);
+            releaseJumpShot(player, true, true, type);
             break;
 
           case 'FIREBALL_SHOT':
           case 'SPLASH_BOMB':
           default:
-            player.vy = -850;
+            player.vy = -840;
             player.grounded = false;
-            releaseJumpShot(player, true, true);
+            releaseJumpShot(player, true, true, type);
             break;
         }
       }
@@ -1741,7 +1881,7 @@
         const opp = match.players[1 - defender.index];
         const ball = match.ball;
 
-        if (ball.owner === opp.index && !opp.dunking && opp.superActiveTimer <= 0) {
+        if (ball.owner === opp.index && !opp.dunking && opp.dribbleInLock <= 0) {
           const dist = Math.hypot(defender.x - opp.x, defender.y - opp.y);
           if (dist < 88) {
             // Check if opponent just dashed (crossover evasion)
@@ -1755,9 +1895,10 @@
             ball.owner = defender.index;
             ball.inFlight = false;
             opp.chargingShot = false;
+            opp.neonBoostTimer = 0;
             opp.stunTimer = 0.45;
             match.shotClock = SHOT_CLOCK_DURATION;
-            addSuperMeter(defender, 16);
+            addSuperMeter(defender, 18);
             match.screenShake = 7;
 
             spawnParticles(ball.x, ball.y, ['#38bdf8', '#fde047', '#ffffff'], 16, 240);
@@ -1766,57 +1907,108 @@
         }
       }
 
-      function attemptBlock(defender) {
-        if (defender.blockCooldown > 0 || defender.stunTimer > 0 || match.inboundTimer > 0) return;
+      function triggerJumpOrBlock(player) {
+        if (player.stunTimer > 0 || player.chargingShot || player.dunking) return;
 
-        defender.blockTimer = 0.34;
-        defender.blockCooldown = 0.62;
-        if (defender.grounded) {
-          defender.vy = -830;
-          defender.grounded = false;
+        const ball = match.ball;
+        const opp = match.players[1 - player.index];
+        const isDefending = ball.owner !== player.index;
+
+        if (player.grounded) {
+          player.vy = isDefending ? -855 : -820;
+          player.grounded = false;
+        }
+
+        // Dedicated Defensive Block Leap when not holding the ball
+        if (isDefending && player.blockCooldown <= 0) {
+          player.blockTimer = 0.48; // Active across jump ascent & apex!
+          player.blockCooldown = 0.52;
+          player.blockSwatTriggered = false;
+
+          // Subtle horizontal reach-assist toward the ball or airborne shooter within 140px
+          const targetX = ball.owner === opp.index ? opp.x : ball.x;
+          const dx = targetX - player.x;
+          if (Math.abs(dx) <= 140) {
+            player.facing = dx >= 0 ? 1 : -1;
+            player.vx = dx * 2.1; // Smoothly closes gap into contesting position
+          }
+        }
+      }
+
+      function evaluateActiveBlockSwat(defender) {
+        if (defender.blockTimer <= 0 || defender.blockSwatTriggered || defender.stunTimer > 0 || match.inboundTimer > 0) {
+          return;
         }
 
         const ball = match.ball;
         const opp = match.players[1 - defender.index];
 
-        // Can block a dunk attempt mid-air (unless it's a Supershot dunk)
-        if (opp.dunking && !opp.dunkIsSuper) {
-          const dist = Math.hypot(defender.x - opp.x, (defender.y - 70) - (opp.y - 70));
-          if (dist < 105) {
+        // Generous Swat Zone around defender's outstretched hands & upper body during jump ascent/apex
+        const handX = defender.x + defender.facing * 24;
+        const handY = defender.y - 98;
+        const upperBodyY = defender.y - 72;
+        const swatRadius = 68;
+
+        // 1. Block an airborne dunk (including Skywalker Dunk, Alley-Oop, and Miami's Neon Fastbreak!)
+        if (opp.dunking && ball.owner === opp.index) {
+          const distHand = Math.hypot(opp.x - handX, (opp.y - 78) - handY);
+          const distBody = Math.hypot(opp.x - defender.x, (opp.y - 68) - upperBodyY);
+          if (distHand < swatRadius + 16 || distBody < swatRadius + 10) {
+            defender.blockSwatTriggered = true;
             opp.dunking = false;
-            opp.vy = 160;
+            opp.neonBoostTimer = 0;
+            opp.vy = 180;
+            opp.stunTimer = 0.4;
+
             ball.owner = null;
             ball.inFlight = true;
             ball.isSupershot = false;
-            ball.vx = (defender.index === 0 ? 1 : -1) * 340;
-            ball.vy = -380;
-            ball.pickupCooldown = 0.3;
+            ball.superType = null;
+            ball.vx = (defender.index === 0 ? 1 : -1) * 350;
+            ball.vy = -370;
+            ball.pickupCooldown = 0.25;
 
-            addSuperMeter(defender, 20);
-            match.screenShake = 14;
+            addSuperMeter(defender, 24);
+            match.hitStopTimer = 0.075;
+            match.screenShake = 15;
             sfx.playBlock();
-            spawnParticles(opp.x, opp.y - 60, ['#ef4444', '#fde047', '#ffffff'], 24, 340);
-            spawnPopup(defender.x, defender.y - 135, 'REJECTED!', '#ef4444', 1.3);
+            spawnParticles(opp.x, opp.y - 68, ['#ef4444', '#fde047', '#ffffff'], 26, 360);
+            spawnPopup(defender.x, defender.y - 135, 'REJECTED!', '#ef4444', 1.35);
             return;
           }
         }
 
-        // Can block a shot in flight (unless Supershot)
-        if (ball.owner === null && ball.inFlight && !ball.isSupershot && ball.lastShooter !== defender.index) {
-          const handX = defender.x + defender.facing * 20;
-          const handY = defender.y - 95;
-          const dist = Math.hypot(ball.x - handX, ball.y - handY);
-          if (dist < 76) {
-            ball.vx = (defender.index === 0 ? 1 : -1) * 380;
-            ball.vy = -340;
-            ball.isGreenRelease = false;
-            ball.pickupCooldown = 0.25;
+        // 2. Block a shot in early/mid flight path (and non-fadeaway supershots if swatted at release/rim)
+        if (ball.owner === null && ball.inFlight && ball.lastShooter !== defender.index) {
+          const isUnblockableFadeaway = ball.isSupershot && ball.superType === 'SOLAR_FADEAWAY';
+          if (isUnblockableFadeaway) return;
 
-            addSuperMeter(defender, 20);
-            match.screenShake = 13;
+          const distHand = Math.hypot(ball.x - handX, ball.y - handY);
+          const distBody = Math.hypot(ball.x - defender.x, ball.y - upperBodyY);
+
+          if (distHand < swatRadius || distBody < swatRadius - 8) {
+            defender.blockSwatTriggered = true;
+            const wasSuper = ball.isSupershot;
+
+            ball.vx = (defender.index === 0 ? 1 : -1) * 390;
+            ball.vy = -330;
+            ball.isGreenRelease = false;
+            ball.isSupershot = false;
+            ball.superType = null;
+            ball.pickupCooldown = 0.22;
+
+            addSuperMeter(defender, 22);
+            match.hitStopTimer = 0.065;
+            match.screenShake = 14;
             sfx.playBlock();
-            spawnParticles(ball.x, ball.y, ['#ef4444', '#fde047', '#ffffff'], 22, 320);
-            spawnPopup(defender.x, defender.y - 135, 'REJECTED!', '#ef4444', 1.3);
+            spawnParticles(ball.x, ball.y, ['#ef4444', '#fde047', '#ffffff'], 24, 340);
+            spawnPopup(
+              defender.x,
+              defender.y - 135,
+              wasSuper ? 'SUPER REJECTED!' : 'BLOCKED!',
+              '#ef4444',
+              wasSuper ? 1.35 : 1.25
+            );
           }
         }
       }
@@ -1830,10 +2022,11 @@
         const hoop = getAttackingHoop(scorerIdx);
 
         scorer.score += points;
+        scorer.neonBoostTimer = 0;
         hoop.netWave = 1.0;
         if (isDunk || isSupershot) {
           hoop.shake = 1.0;
-          match.screenShake = isSupershot ? 18 : 14;
+          match.screenShake = isSupershot ? 16 : 14;
           sfx.playDunk();
         } else if (isSwish) {
           sfx.playSwish();
@@ -1843,9 +2036,9 @@
           sfx.playCrowdCheer(0.18);
         }
 
-        // Build Supershot Meter on score
+        // Build Supershot Meter strictly from skilled scoring (never for getting scored on!)
         if (!isSupershot) {
-          addSuperMeter(scorer, isDunk ? 24 : (points === 3 ? 26 : 18));
+          addSuperMeter(scorer, isDunk ? 22 : (points === 3 ? 25 : 18));
         }
 
         match.crowdExcitement = 1.0;
@@ -1868,21 +2061,23 @@
           return;
         }
 
-        // Trigger smooth automatic inbound after brief celebration
-        match.inboundTimer = 1.05;
+        // Trigger realistic 1.1-second Inbound Reset (defender retreats to mid-court while inbounder sets up)
+        match.inboundTimer = 1.1;
         match.inboundTo = scoredOnIdx;
         match.ball.owner = null;
         match.ball.inFlight = false;
         match.ball.isSupershot = false;
+        match.ball.superType = null;
         match.ball.vx = 0;
         match.ball.vy = 180;
       }
 
       function executeInbound() {
         const receiver = match.players[match.inboundTo];
-        const other = match.players[1 - match.inboundTo];
+        const defender = match.players[1 - match.inboundTo];
 
-        receiver.x = receiver.index === 0 ? 225 : W - 225;
+        // Inbounder steps in from baseline with a 0.75-second dribble-in lock
+        receiver.x = receiver.index === 0 ? 185 : W - 185;
         receiver.y = FLOOR_Y;
         receiver.vx = 0;
         receiver.vy = 0;
@@ -1890,18 +2085,23 @@
         receiver.facing = receiver.index === 0 ? 1 : -1;
         receiver.chargingShot = false;
         receiver.dunking = false;
+        receiver.dribbleInLock = 0.75;
 
-        other.x = other.index === 0 ? 450 : W - 450;
-        other.y = FLOOR_Y;
-        other.vx = 0;
-        other.vy = 0;
-        other.grounded = true;
-        other.chargingShot = false;
-        other.dunking = false;
+        // Scoring team's defender retreats to mid-court defense
+        defender.x = defender.index === 0 ? 580 : W - 580;
+        defender.y = FLOOR_Y;
+        defender.vx = 0;
+        defender.vy = 0;
+        defender.grounded = true;
+        defender.facing = defender.index === 0 ? 1 : -1;
+        defender.chargingShot = false;
+        defender.dunking = false;
+        defender.dribbleInLock = 0;
 
         match.ball.owner = receiver.index;
         match.ball.inFlight = false;
         match.ball.isSupershot = false;
+        match.ball.superType = null;
         match.ball.trail = [];
         match.shotClock = SHOT_CLOCK_DURATION;
         match.inboundTimer = 0;
@@ -1980,24 +2180,12 @@
       function updateCPU(cpu, dt) {
         const human = match.players[0];
         const ball = match.ball;
-        const myHoop = getAttackingHoop(cpu.index); // LEFT_HOOP
-        const defHoop = getDefendingHoop(cpu.index); // RIGHT_HOOP
+        if (cpu.stunTimer > 0 || match.inboundTimer > 0 || cpu.dribbleInLock > 0) return;
 
-        // Difficulty tuning parameters
-        const cfg = {
-          ROOKIE: { speedMult: 0.76, reaction: 0.36, greenAcc: 0.25, stealChance: 0.28, blockChance: 0.30, dashChance: 0.15 },
-          PRO:    { speedMult: 0.92, reaction: 0.20, greenAcc: 0.58, stealChance: 0.55, blockChance: 0.62, dashChance: 0.42 },
-          ALLSTAR:{ speedMult: 1.04, reaction: 0.11, greenAcc: 0.85, stealChance: 0.80, blockChance: 0.86, dashChance: 0.72 }
-        }[appState.difficulty];
-
-        if (cpu.stunTimer > 0 || match.inboundTimer > 0) return;
-
-        // Trigger Supershot immediately when charged and advantageous
-        if (cpu.superMeter >= 100) {
-          if (cpu.team.supershotType === 'LIGHTNING_SLAM' || ball.owner === cpu.index) {
-            activateSupershot(cpu);
-            return;
-          }
+        // Trigger Supershot when charged and holding the ball
+        if (cpu.superMeter >= 100 && ball.owner === cpu.index) {
+          activateSupershot(cpu);
+          return;
         }
 
         // If charging a jump shot, release at target meter charge
@@ -2011,7 +2199,8 @@
         if (cpu.dunking) return;
 
         cpu.aiTimer -= dt;
-        const moveSpeed = 355 * cfg.speedMult;
+        const boostMult = cpu.neonBoostTimer > 0 ? 1.4 : 1.0;
+        const moveSpeed = 355 * cfg.speedMult * boostMult;
 
         // OFFENSE: CPU holds the ball
         if (ball.owner === cpu.index) {
@@ -2045,11 +2234,10 @@
               cpu.facing = -1;
             }
             if (cpu.grounded && distToRim < 195) {
-              cpu.vy = -830;
-              cpu.grounded = false;
+              triggerJumpOrBlock(cpu);
             }
             if (canAttemptDunk(cpu)) {
-              startDunk(cpu, false);
+              startDunk(cpu, cpu.neonBoostTimer > 0, cpu.neonBoostTimer > 0 ? 'NEON_SLASH' : null);
             }
           } else if (cpu.aiDecision === 'SHOOT_3' || cpu.aiDecision === 'SHOOT_2') {
             cpu.vx = 0;
@@ -2081,15 +2269,15 @@
             cpu.facing = human.x < cpu.x ? -1 : 1;
           }
 
-          // Contest jump shots or dunks
-          if ((human.chargingShot || human.dunking) && Math.abs(cpu.x - human.x) < 130) {
+          // Contest jump shots or dunks using Jump/Block
+          if ((human.chargingShot || human.dunking) && Math.abs(cpu.x - human.x) < 135) {
             if (cpu.grounded && Math.random() < cfg.blockChance * dt * 8) {
-              attemptBlock(cpu);
+              triggerJumpOrBlock(cpu);
             }
           }
 
           // Attempt steal when close
-          if (Math.abs(cpu.x - human.x) < 76 && cpu.stealCooldown <= 0) {
+          if (Math.abs(cpu.x - human.x) < 76 && cpu.stealCooldown <= 0 && human.dribbleInLock <= 0) {
             if (Math.random() < cfg.stealChance * dt * 3.2) {
               attemptSteal(cpu);
             }
@@ -2102,12 +2290,11 @@
             cpu.vx = Math.sign(diffX) * moveSpeed * 1.05;
             cpu.facing = Math.sign(diffX);
           }
-          if (ball.y < cpu.y - 60 && Math.abs(diffX) < 90 && cpu.grounded && ball.inFlight) {
-            if (ball.lastShooter !== cpu.index && Math.random() < cfg.blockChance * dt * 6) {
-              attemptBlock(cpu);
+          if (ball.y < cpu.y - 60 && Math.abs(diffX) < 110 && cpu.grounded && ball.inFlight) {
+            if (ball.lastShooter !== cpu.index && Math.random() < cfg.blockChance * dt * 7) {
+              triggerJumpOrBlock(cpu);
             } else if (ball.vy > 0) {
-              cpu.vy = -800;
-              cpu.grounded = false;
+              triggerJumpOrBlock(cpu);
             }
           }
         }
@@ -2118,6 +2305,13 @@
          ========================================================================= */
       function updateMatch(dt) {
         if (!match) return;
+
+        // Hit-stop freeze frame for crisp defensive block impact
+        if (match.hitStopTimer > 0) {
+          match.hitStopTimer -= dt;
+          match.screenShake = Math.max(0, match.screenShake - dt * 20);
+          return;
+        }
 
         // Decay screen flashes, shakes, hoop animations
         match.screenShake = Math.max(0, match.screenShake - dt * 42);
@@ -2148,9 +2342,15 @@
           if (pt.life <= 0) match.particles.splice(i, 1);
         }
 
-        // Inbound pause countdown
+        // Inbound pause countdown (defender retreats smoothly toward mid-court)
         if (match.inboundTimer > 0) {
           match.inboundTimer -= dt;
+          if (match.inboundTo !== null) {
+            const retreatingDef = match.players[1 - match.inboundTo];
+            const midTargetX = retreatingDef.index === 0 ? 580 : W - 580;
+            retreatingDef.x += (midTargetX - retreatingDef.x) * Math.min(1, dt * 5.5);
+            retreatingDef.facing = retreatingDef.index === 0 ? 1 : -1;
+          }
           updateBallPhysics(dt);
           if (match.inboundTimer <= 0) {
             executeInbound();
@@ -2185,6 +2385,7 @@
         // Update both players
         match.players.forEach((p) => {
           // Cooldowns & timers
+          p.dribbleInLock = Math.max(0, p.dribbleInLock - dt);
           p.dashTimer = Math.max(0, p.dashTimer - dt);
           p.dashCooldown = Math.max(0, p.dashCooldown - dt);
           p.stunTimer = Math.max(0, p.stunTimer - dt);
@@ -2194,10 +2395,8 @@
           p.blockCooldown = Math.max(0, p.blockCooldown - dt);
           p.shotAnimTimer = Math.max(0, p.shotAnimTimer - dt);
           p.superActiveTimer = Math.max(0, p.superActiveTimer - dt);
+          p.neonBoostTimer = Math.max(0, p.neonBoostTimer - dt);
           p.rimHangTimer = Math.max(0, p.rimHangTimer - dt);
-
-          // Passive trickle of Supershot gauge
-          addSuperMeter(p, dt * 1.45);
 
           // Afterimage decay
           for (let i = p.afterimages.length - 1; i >= 0; i--) {
@@ -2241,20 +2440,31 @@
             return;
           }
 
-          // Human Input or CPU AI
+          // Automatic Dribble-In step after inbound (locks shooting until inbound dribble completes)
+          if (p.dribbleInLock > 0) {
+            p.facing = p.index === 0 ? 1 : -1;
+            p.vx = p.facing * 210;
+            p.x += p.vx * dt;
+            p.runCycle += dt * 14;
+            p.dribblePhase += dt * 12;
+            return;
+          }
+
+          // Human Input or CPU AI (Decoupled Actions!)
           if (p.isCPU) {
             updateCPU(p, dt);
           } else if (p.stunTimer <= 0) {
             const inp = getPlayerInputs(p.index);
-            const speed = 370;
+            const speed = p.neonBoostTimer > 0 ? 520 : 370;
+            const hasBall = match.ball.owner === p.index;
 
-            // Supershot trigger
+            // 1. Supershot (Q / L in 1P; H / P in 2P)
             if (inp.superDown && p.superMeter >= 100) {
               activateSupershot(p);
               if (p.dunking) return;
             }
 
-            // Horizontal movement (unless currently in a burst dash)
+            // 2. Horizontal Movement (A/D or Left/Right)
             if (p.dashTimer <= 0) {
               if (inp.left && !inp.right) {
                 p.vx = -speed;
@@ -2268,28 +2478,33 @@
               }
             }
 
-            // Dash / Crossover
-            if (inp.dashDown && p.dashCooldown <= 0 && !p.chargingShot) {
-              const dashDir = inp.left ? -1 : (inp.right ? 1 : p.facing);
-              p.facing = dashDir;
-              p.vx = dashDir * 720;
-              p.dashTimer = 0.21;
-              p.dashCooldown = 1.1;
-              sfx.playSqueak();
+            // 3. Dedicated Jump / Block (W or Up Arrow) - never triggered by Spacebar!
+            if (inp.jumpBlockDown) {
+              triggerJumpOrBlock(p);
             }
 
-            // Jump
-            if (inp.jumpDown && p.grounded && !p.chargingShot) {
-              p.vy = -820;
-              p.grounded = false;
+            // 4. Dedicated Dash Crossover (Offense) / Steal Lunge (Defense) (SHIFT / K in 1P; G / L in 2P)
+            if (inp.dashStealDown) {
+              if (hasBall) {
+                if (p.dashCooldown <= 0 && !p.chargingShot) {
+                  const dashDir = inp.left ? -1 : (inp.right ? 1 : p.facing);
+                  p.facing = dashDir;
+                  p.vx = dashDir * 720;
+                  p.dashTimer = 0.21;
+                  p.dashCooldown = 1.1;
+                  sfx.playSqueak();
+                }
+              } else {
+                attemptSteal(p);
+              }
             }
 
-            // Offense vs Defense Action Key (Shoot / Dunk / Steal / Block)
-            const hasBall = match.ball.owner === p.index;
+            // 5. Dedicated Shoot / Dunk (SPACE / J in 1P; F / K in 2P) - strictly offensive!
             if (hasBall) {
               if (inp.shootDown) {
                 if (canAttemptDunk(p)) {
-                  startDunk(p, false);
+                  const isNeonSlash = p.neonBoostTimer > 0;
+                  startDunk(p, isNeonSlash, isNeonSlash ? 'NEON_SLASH' : null);
                   return;
                 } else if (!p.chargingShot) {
                   beginShotCharge(p);
@@ -2299,15 +2514,8 @@
                 releaseJumpShot(p, false, false);
               }
             } else {
-              // Cancel shot charge if ball was stripped
+              // Cancel shot charge if ball was stripped or released
               p.chargingShot = false;
-              if (inp.shootDown) {
-                if (p.grounded) {
-                  attemptSteal(p);
-                } else {
-                  attemptBlock(p);
-                }
-              }
             }
           } else {
             p.vx *= 0.85;
@@ -2315,15 +2523,15 @@
 
           // Advance Shot Meter Charge
           if (p.chargingShot) {
-            p.shotCharge += dt * 1.48;
+            p.shotCharge += dt * 1.42;
             if (p.shotCharge >= 1.0) {
               p.shotCharge = 1.0;
               releaseJumpShot(p, false, false);
             }
           }
 
-          // Record dash afterimages
-          if (p.dashTimer > 0) {
+          // Record dash / Neon Fastbreak afterimages
+          if (p.dashTimer > 0 || p.neonBoostTimer > 0) {
             p.afterimages.push({ x: p.x, y: p.y, facing: p.facing, alpha: 0.55 });
           }
 
@@ -2360,6 +2568,15 @@
         });
 
         updateBallPhysics(dt);
+
+        // Evaluate active defensive swat zones after player & ball positions update
+        match.players.forEach((p) => {
+          if (match.ball.owner !== p.index) {
+            evaluateActiveBlockSwat(p);
+          }
+        });
+
+        updateDynamicControlHUD(false);
       }
 
       function updateBallPhysics(dt) {
@@ -2425,6 +2642,7 @@
           ball.inFlight = false;
           ball.isGreenRelease = false;
           ball.isSupershot = false;
+          ball.superType = null;
         }
 
         // Arena Side Walls & Ceiling
@@ -2440,7 +2658,7 @@
           ball.vy = Math.abs(ball.vy) * 0.6;
         }
 
-        // Backboard & Rim Collisions (Skip rim lip obstruction on active Supershots for guaranteed cinematic swish!)
+        // Backboard & Rim Collisions (Supershots have cleaner entry, except normal physics applies after a block)
         if (!ball.isSupershot) {
           // Left Backboard
           if (
@@ -2887,22 +3105,22 @@
           ctx.restore();
         });
 
-        // 2. Ground Shadow
-        const heightAboveFloor = Math.max(0, FLOOR_Y - p.y);
-        const shadowScale = Math.max(0.35, 1 - heightAboveFloor / 420);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.36)';
-        ctx.beginPath();
-        ctx.ellipse(p.x, FLOOR_Y + 4, 34 * shadowScale, 9 * shadowScale, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 3. 2PT / 3PT Live Shot Range Indicator under Ball Handler
+        // 3. 2PT / 3PT Live Shot Range Indicator (or DRIBBLE IN! lock indicator) under Ball Handler
         if (match && match.ball.owner === p.index && !p.dunking) {
-          const isThree = isBehindThreePointLine(p.index, p.x);
           ctx.save();
           ctx.font = '700 12px "Bungee", sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillStyle = isThree ? '#38bdf8' : '#fde047';
-          ctx.fillText(isThree ? '3PT RANGE' : '2PT', p.x, FLOOR_Y + 23);
+          if (p.dribbleInLock > 0) {
+            ctx.fillStyle = '#fb923c';
+            ctx.fillText('DRIBBLE IN!', p.x, FLOOR_Y + 23);
+          } else if (isDeepBackcourt(p.index, p.x)) {
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillText('DEEP BACKCOURT', p.x, FLOOR_Y + 23);
+          } else {
+            const isThree = isBehindThreePointLine(p.index, p.x);
+            ctx.fillStyle = isThree ? '#38bdf8' : '#fde047';
+            ctx.fillText(isThree ? '3PT RANGE' : '2PT', p.x, FLOOR_Y + 23);
+          }
           ctx.restore();
         }
 
@@ -3127,20 +3345,20 @@
           for (let s = 0; s < 3; s++) {
             const ang = ts * 0.01 + (s * Math.PI * 2) / 3;
             const sx = Math.cos(ang) * 24;
-            const sy = headY - 38 + Math.sin(ang) * 6;
-            ctx.fillStyle = '#fde047';
-            ctx.font = '14px sans-serif';
-            ctx.fillText('★', sx, sy);
-          }
+        // Floating P1 / P2 / CPU Tag (or DRIBBLE IN! lock badge) above Head
+        if (p.dribbleInLock > 0) {
+          ctx.fillStyle = '#fb923c';
+          ctx.font = '700 13px "Bungee", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('DRIBBLE IN!', 0, headY - 42);
+        } else {
+          const tagText = p.index === 0 ? 'P1' : (p.isCPU ? 'CPU' : 'P2');
+          const tagColor = p.index === 0 ? '#38bdf8' : '#fb7185';
+          ctx.fillStyle = tagColor;
+          ctx.font = '700 12px "Bungee", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`▼ ${tagText}`, 0, headY - 40);
         }
-
-        // Floating P1 / P2 / CPU Tag above Head
-        const tagText = p.index === 0 ? 'P1' : (p.isCPU ? 'CPU' : 'P2');
-        const tagColor = p.index === 0 ? '#38bdf8' : '#fb7185';
-        ctx.fillStyle = tagColor;
-        ctx.font = '700 12px "Bungee", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`▼ ${tagText}`, 0, headY - 40);
 
         ctx.restore();
       }
@@ -3569,6 +3787,78 @@
 
         const showPauseBtn = screenName === 'PLAYING' || screenName === 'PAUSED';
         document.getElementById('btn-pause').classList.toggle('hidden', !showPauseBtn);
+        updateDynamicControlHUD(true);
+      }
+
+      let lastHudSignature = '';
+      function updateDynamicControlHUD(force = false) {
+        const is2P = appState.mode === '2P_LOCAL';
+        const p1 = match ? match.players[0] : null;
+        const p2 = match ? match.players[1] : null;
+        const owner = match ? match.ball.owner : 0;
+
+        const p1Offense = owner === 0;
+        const p2Offense = owner === 1;
+        const p1Super = p1 ? p1.superMeter >= 100 : false;
+        const p2Super = p2 ? p2.superMeter >= 100 : false;
+        const p1Locked = p1 ? p1.dribbleInLock > 0 : false;
+        const p2Locked = p2 ? p2.dribbleInLock > 0 : false;
+
+        const sig = `${is2P}|${owner}|${p1Super}|${p2Super}|${p1Locked}|${p2Locked}`;
+        if (!force && sig === lastHudSignature) return;
+        lastHudSignature = sig;
+
+        const leg1 = document.getElementById('legend-p1');
+        const leg2 = document.getElementById('legend-p2');
+
+        if (!is2P) {
+          // 1P Mode: Show full P1 Offense vs Defense live role & highlighted active action keys
+          const roleHtml = p1Offense
+            ? `<span class="role-badge role-offense">${p1Locked ? 'INBOUNDING' : 'OFFENSE'}</span>`
+            : `<span class="role-badge role-defense">DEFENSE</span>`;
+
+          const shootCls = (p1Offense && !p1Locked) ? 'key-cap active-action' : 'key-cap';
+          const jumpCls = !p1Offense ? 'key-cap active-defense' : 'key-cap';
+          const dashCls = p1Offense ? 'key-cap active-action' : 'key-cap active-defense';
+          const superCls = (p1Super && p1Offense && !p1Locked) ? 'key-cap active-super' : 'key-cap';
+
+          leg1.innerHTML = `
+            <span style="color:#38bdf8; font-weight:700;">P1</span>
+            ${roleHtml}
+            <span><span class="key-cap">A</span><span class="key-cap">D</span>/<span class="key-cap">◀</span><span class="key-cap">▶</span> Move</span>
+            <span><span class="${jumpCls}">W</span>/<span class="${jumpCls}">▲</span> ${p1Offense ? 'Jump' : 'Jump / Block'}</span>
+            <span><span class="${shootCls}">SPACE</span>/<span class="${shootCls}">J</span> ${p1Offense ? 'Shoot / Dunk' : 'Shoot (Offense)'}</span>
+            <span><span class="${dashCls}">SHIFT</span>/<span class="${dashCls}">K</span> ${p1Offense ? 'Dash Crossover' : 'Steal Lunge'}</span>
+            <span><span class="${superCls}">Q</span>/<span class="${superCls}">L</span> Supershot</span>
+          `;
+          leg2.innerHTML = `<span style="color:#94a3b8; font-size:11px;">Hold <strong>SPACE</strong> into <span style="color:#22c55e; font-weight:700;">GREEN</span> · Press <strong>W / ▲</strong> to Block</span>`;
+        } else {
+          // 2P Local Mode: Show both P1 and P2 dedicated keycaps & live Offense/Defense states
+          const p1Role = p1Offense
+            ? `<span class="role-badge role-offense">OFF</span>`
+            : `<span class="role-badge role-defense">DEF</span>`;
+          const p2Role = p2Offense
+            ? `<span class="role-badge role-offense">OFF</span>`
+            : `<span class="role-badge role-defense">DEF</span>`;
+
+          leg1.innerHTML = `
+            <span style="color:#38bdf8; font-weight:700;">P1</span> ${p1Role}
+            <span><span class="key-cap">A</span><span class="key-cap">D</span> Move</span>
+            <span><span class="${!p1Offense ? 'key-cap active-defense' : 'key-cap'}">W</span> ${p1Offense ? 'Jump' : 'Block'}</span>
+            <span><span class="${(p1Offense && !p1Locked) ? 'key-cap active-action' : 'key-cap'}">F</span> Shoot</span>
+            <span><span class="${p1Offense ? 'key-cap active-action' : 'key-cap active-defense'}">G</span> ${p1Offense ? 'Dash' : 'Steal'}</span>
+            <span><span class="${(p1Super && p1Offense) ? 'key-cap active-super' : 'key-cap'}">H</span> Super</span>
+          `;
+
+          leg2.innerHTML = `
+            <span style="color:#fb7185; font-weight:700;">P2</span> ${p2Role}
+            <span><span class="key-cap">◀</span><span class="key-cap">▶</span> Move</span>
+            <span><span class="${!p2Offense ? 'key-cap active-defense' : 'key-cap'}">▲</span> ${p2Offense ? 'Jump' : 'Block'}</span>
+            <span><span class="${(p2Offense && !p2Locked) ? 'key-cap active-action' : 'key-cap'}">K</span> Shoot</span>
+            <span><span class="${p2Offense ? 'key-cap active-action' : 'key-cap active-defense'}">L</span> ${p2Offense ? 'Dash' : 'Steal'}</span>
+            <span><span class="${(p2Super && p2Offense) ? 'key-cap active-super' : 'key-cap'}">P</span> Super</span>
+          `;
+        }
       }
 
       function buildRosterGrids() {
@@ -3666,6 +3956,16 @@
         });
       });
 
+      document.querySelectorAll('#duration-selector .pill-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          sfx.ensureContext();
+          sfx.playDribble();
+          document.querySelectorAll('#duration-selector .pill-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.matchDuration = parseInt(btn.getAttribute('data-duration'), 10) || 60;
+        });
+      });
+
       // Tip-Off Button
       document.getElementById('btn-tipoff').addEventListener('click', () => {
         sfx.ensureContext();
@@ -3752,6 +4052,7 @@
       window.onload = function () {
         resizeCanvas();
         buildRosterGrids();
+        updateDynamicControlHUD(true);
         setScreen('SETUP');
         requestAnimationFrame(gameLoop);
       };
