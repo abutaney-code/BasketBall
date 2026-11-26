@@ -1,0 +1,3761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HOOP STARS: ARCADE SHOWDOWN</title>
+  <style>
+    /* =========================================================================
+       HOOP STARS: ARCADE SHOWDOWN - CORE STYLES & ARCADE UI THEME
+       ========================================================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Chakra+Petch:ital,wght@0,600;0,700;1,700&display=swap');
+
+    :root {
+      --bg-dark: #090b16;
+      --panel-bg: rgba(15, 20, 38, 0.94);
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --accent-gold: #fbbf24;
+      --accent-orange: #f97316;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-pink: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 20%, #172042 0%, #070912 100%);
+      color: var(--text-main);
+      font-family: 'Chakra Petch', sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Responsive Arcade Wrapper */
+    #app-shell {
+      position: relative;
+      width: 100%;
+      max-width: 1280px;
+      height: 100%;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    /* Aspect-Locked High-DPI Canvas Container */
+    #stage-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 76px);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(255, 255, 255, 0.12);
+      background: #0d1224;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Top Floating Quick Action Buttons (Sound & Pause/Help) */
+    #top-controls {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      z-index: 30;
+      display: flex;
+      gap: 8px;
+    }
+
+    .hud-icon-btn {
+      background: rgba(10, 14, 28, 0.82);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      color: #fff;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .hud-icon-btn:hover {
+      background: rgba(30, 41, 75, 0.95);
+      border-color: var(--accent-gold);
+      transform: translateY(-1px);
+    }
+
+    .hud-icon-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Overlay Screens (Main Setup, Bracket, Pause, Match End) */
+    .overlay-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 25;
+      background: linear-gradient(180deg, rgba(9, 12, 26, 0.88) 0%, rgba(11, 15, 32, 0.96) 100%);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 24px;
+      overflow-y: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Title Logo Styling */
+    .arcade-title {
+      font-family: 'Bungee', cursive;
+      font-size: clamp(24px, 4vw, 48px);
+      line-height: 1.02;
+      text-align: center;
+      background: linear-gradient(180deg, #ffffff 10%, #fde047 52%, #f97316 95%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 5px 0 #7c2d12) drop-shadow(0 10px 20px rgba(249, 115, 22, 0.45));
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .arcade-subtitle {
+      font-size: clamp(11px, 1.3vw, 14px);
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 14px;
+    }
+
+    /* Setup Grid Layout */
+    .setup-card {
+      width: 100%;
+      max-width: 1060px;
+      background: rgba(18, 24, 46, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .setup-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .group-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.13);
+      color: #fff;
+    }
+
+    .pill-btn.active {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      border-color: #fde047;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.45);
+    }
+
+    /* Team Selection Columns */
+    .rosters-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 780px) {
+      .rosters-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .roster-pane {
+      background: rgba(9, 13, 28, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .roster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-badge {
+      font-family: 'Bungee', cursive;
+      font-size: 14px;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .p1-badge {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+    }
+
+    .p2-badge {
+      background: rgba(244, 63, 94, 0.2);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.45);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .team-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 7px 5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .team-card.selected-p1 {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.18);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+    }
+
+    .team-card.selected-p2 {
+      border-color: #fb7185;
+      background: rgba(244, 63, 94, 0.18);
+      box-shadow: 0 0 14px rgba(244, 63, 94, 0.35);
+    }
+
+    .team-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bungee', cursive;
+      font-size: 11px;
+      border: 2px solid #fff;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .team-card-name {
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.1;
+      color: #f1f5f9;
+    }
+
+    .selected-team-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 7px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .supershot-tag {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    /* Big Tip-Off Start Button */
+    .tipoff-btn {
+      align-self: center;
+      margin-top: 2px;
+      background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+      border: 2px solid #86efac;
+      color: #fff;
+      font-family: 'Bungee', cursive;
+      font-size: clamp(16px, 2vw, 22px);
+      padding: 11px 42px;
+      border-radius: 14px;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      box-shadow: 0 6px 0 #14532d, 0 12px 26px rgba(34, 197, 94, 0.45);
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+
+    .tipoff-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    .tipoff-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #14532d;
+    }
+
+    /* Tournament Bracket Overlay */
+    .bracket-board {
+      width: 100%;
+      max-width: 940px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 14px 0;
+    }
+
+    .bracket-round {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .bracket-round-title {
+      text-align: center;
+      font-family: 'Bungee', cursive;
+      font-size: 14px;
+      color: var(--accent-gold);
+      letter-spacing: 1px;
+    }
+
+    .matchup-box {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .matchup-box.active-match {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 18px rgba(251, 191, 36, 0.3);
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .matchup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+
+    .matchup-row.winner {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+
+    /* Bottom Persistent Control Legend + Mobile Touch Bar */
+    #bottom-bar {
+      width: 100%;
+      max-width: 1280px;
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(15, 20, 38, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .legend-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .key-cap {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-weight: 700;
+      color: #fff;
+      font-size: 11px;
+    }
+
+    /* On-screen Touch Controls for Tablet/Mobile */
+    #touch-controls {
+      display: none;
+      width: 100%;
+      justify-content: space-between;
+      padding: 4px 8px;
+      gap: 10px;
+    }
+
+    @media (pointer: coarse), (max-width: 820px) {
+      #bottom-bar .desktop-legend {
+        display: none;
+      }
+      #touch-controls {
+        display: flex;
+      }
+      #stage-container {
+        max-height: calc(100vh - 115px);
+      }
+    }
+
+    .touch-pad {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .touch-btn {
+      width: 48px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      font-family: 'Bungee', cursive;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .touch-btn:active {
+      background: rgba(249, 115, 22, 0.85);
+      transform: scale(0.95);
+    }
+
+    /* Pause / Help Modal Box */
+    .modal-panel {
+      background: rgba(15, 23, 42, 0.96);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 22px 28px;
+      max-width: 660px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .controls-grid-help {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell">
+    <div id="stage-container">
+      <!-- High-DPI Arcade Court Canvas -->
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- Top-Right Persistent Utility Controls -->
+      <div id="top-controls">
+        <button id="btn-sound" class="hud-icon-btn" title="Toggle Audio">🔊 SFX: ON</button>
+        <button id="btn-pause" class="hud-icon-btn hidden" title="Pause & Controls (P)">⏸ PAUSE</button>
+      </div>
+
+      <!-- =====================================================================
+           SCREEN 1: MAIN SETUP & ROSTER SELECTION
+           ===================================================================== -->
+      <div id="screen-setup" class="overlay-screen">
+        <h1 class="arcade-title">HOOP STARS: ARCADE SHOWDOWN</h1>
+        <div class="arcade-subtitle">1-ON-1 SUPERSTAR STREET &amp; ARENA BASKETBALL</div>
+
+        <div class="setup-card">
+          <div class="setup-top-row">
+            <!-- Game Mode Selector -->
+            <div class="control-group">
+              <span class="group-label">1. Game Mode</span>
+              <div class="pill-row" id="mode-selector">
+                <button class="pill-btn active" data-mode="1P_QUICK">1P vs CPU</button>
+                <button class="pill-btn" data-mode="1P_TOURNAMENT">1P TOURNAMENT</button>
+                <button class="pill-btn" data-mode="2P_LOCAL">2P LOCAL</button>
+              </div>
+            </div>
+
+            <!-- CPU Difficulty Selector -->
+            <div class="control-group" id="difficulty-group">
+              <span class="group-label">2. CPU Difficulty</span>
+              <div class="pill-row" id="diff-selector">
+                <button class="pill-btn" data-diff="ROOKIE">ROOKIE</button>
+                <button class="pill-btn active" data-diff="PRO">PRO</button>
+                <button class="pill-btn" data-diff="ALLSTAR">ALL-STAR</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Roster Pickers -->
+          <div class="rosters-wrapper">
+            <!-- Player 1 Roster -->
+            <div class="roster-pane">
+              <div class="roster-header">
+                <span class="player-badge p1-badge">PLAYER 1 (LEFT HOOP)</span>
+                <span id="p1-star-name" style="font-weight:700; color:#e2e8f0; font-size:13px;">King L.A. #23</span>
+              </div>
+              <div class="team-grid" id="p1-team-grid"></div>
+              <div class="selected-team-info">
+                <span>Supershot:</span>
+                <span id="p1-supershot-name" class="supershot-tag">Skywalker Mega Dunk</span>
+              </div>
+            </div>
+
+            <!-- Player 2 / CPU Roster -->
+            <div class="roster-pane" id="p2-roster-pane">
+              <div class="roster-header">
+                <span class="player-badge p2-badge" id="p2-role-badge">CPU OPPONENT (RIGHT HOOP)</span>
+                <span id="p2-star-name" style="font-weight:700; color:#e2e8f0; font-size:13px;">Air Chi #23</span>
+              </div>
+              <div class="team-grid" id="p2-team-grid"></div>
+              <div class="selected-team-info">
+                <span>Supershot:</span>
+                <span id="p2-supershot-name" class="supershot-tag">Airborne Fireball 3PT</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-tipoff" class="tipoff-btn">🏀 TIP OFF!</button>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SCREEN 2: 1P CHAMPIONSHIP TOURNAMENT BRACKET
+           ===================================================================== -->
+      <div id="screen-bracket" class="overlay-screen hidden">
+        <h2 class="arcade-title" style="font-size: clamp(22px, 3.2vw, 38px);">CHAMPIONSHIP BRACKET</h2>
+        <div class="arcade-subtitle" id="bracket-status-text">ROUND 1: QUARTERFINALS</div>
+
+        <div class="bracket-board" id="bracket-board"></div>
+
+        <div class="modal-actions">
+          <button id="btn-bracket-play" class="tipoff-btn">PLAY NEXT ROUND</button>
+          <button id="btn-bracket-quit" class="pill-btn">EXIT TO MENU</button>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SCREEN 3: PAUSE & CONTROLS OVERLAY
+           ===================================================================== -->
+      <div id="screen-pause" class="overlay-screen hidden">
+        <div class="modal-panel">
+          <h2 class="arcade-title" style="font-size: 32px;">GAME PAUSED</h2>
+          <div class="controls-grid-help">
+            <div>
+              <div style="color:#38bdf8; font-weight:700; margin-bottom:6px;">PLAYER 1 CONTROLS</div>
+              <div><span class="key-cap">A</span> / <span class="key-cap">D</span> : Move Left / Right</div>
+              <div><span class="key-cap">W</span> : Jump</div>
+              <div><span class="key-cap">S</span> : Dash / Crossover</div>
+              <div><span class="key-cap">X</span> or <span class="key-cap">SPACE</span> : Shoot / Dunk / Steal / Block</div>
+              <div><span class="key-cap">Z</span> : Activate Supershot (100%)</div>
+              <div style="color:#94a3b8; font-size:11px; margin-top:4px;">*In 1P mode, Arrow Keys + Space/Shift also work!</div>
+            </div>
+            <div>
+              <div style="color:#fb7185; font-weight:700; margin-bottom:6px;">PLAYER 2 CONTROLS (2P LOCAL)</div>
+              <div><span class="key-cap">◀</span> / <span class="key-cap">▶</span> : Move Left / Right</div>
+              <div><span class="key-cap">▲</span> : Jump</div>
+              <div><span class="key-cap">▼</span> : Dash / Crossover</div>
+              <div><span class="key-cap">L</span> or <span class="key-cap">ENTER</span> : Shoot / Dunk / Steal / Block</div>
+              <div><span class="key-cap">K</span> : Activate Supershot (100%)</div>
+            </div>
+          </div>
+          <div style="font-size:12px; color:#cbd5e1;">
+            <strong>PRO TIPS:</strong> Hold Shoot and release inside the <span style="color:#22c55e; font-weight:700;">GREEN ZONE</span> for high-accuracy swishes! Jump near the rim with the ball and press Shoot to <strong>SLAM DUNK</strong>!
+          </div>
+          <div class="modal-actions">
+            <button id="btn-resume" class="tipoff-btn" style="font-size:16px; padding:9px 28px;">RESUME</button>
+            <button id="btn-restart-match" class="pill-btn">RESTART MATCH</button>
+            <button id="btn-quit-menu" class="pill-btn">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SCREEN 4: POST-MATCH VICTORY / GAME OVER OVERLAY
+           ===================================================================== -->
+      <div id="screen-gameover" class="overlay-screen hidden">
+        <div class="modal-panel">
+          <div id="gameover-trophy" style="font-size: 46px;">🏆</div>
+          <h2 id="gameover-heading" class="arcade-title" style="font-size: 36px;">PLAYER 1 WINS!</h2>
+          <div id="gameover-scoreline" style="font-family:'Bungee', cursive; font-size: 26px; color:#fbbf24;">42 - 36</div>
+          <div id="gameover-subtext" style="font-size: 14px; color: #cbd5e1;">What an unforgettable arcade showdown!</div>
+          <div class="modal-actions">
+            <button id="btn-gameover-primary" class="tipoff-btn" style="font-size:17px; padding:10px 30px;">PLAY AGAIN</button>
+            <button id="btn-gameover-menu" class="pill-btn">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls Legend (Desktop) & Touch Controls (Mobile/Tablet) -->
+    <div id="bottom-bar">
+      <div class="legend-cluster desktop-legend" id="legend-p1">
+        <span style="color:#38bdf8; font-weight:700;">P1:</span>
+        <span><span class="key-cap">A</span><span class="key-cap">D</span> Move</span>
+        <span><span class="key-cap">W</span> Jump</span>
+        <span><span class="key-cap">S</span> Dash</span>
+        <span><span class="key-cap">X</span>/<span class="key-cap">Space</span> Shoot/Dunk/Steal/Block</span>
+        <span><span class="key-cap">Z</span> Supershot</span>
+      </div>
+      <div class="legend-cluster desktop-legend" id="legend-p2">
+        <span style="color:#fb7185; font-weight:700;">P2:</span>
+        <span><span class="key-cap">◀</span><span class="key-cap">▶</span> Move</span>
+        <span><span class="key-cap">▲</span> Jump</span>
+        <span><span class="key-cap">▼</span> Dash</span>
+        <span><span class="key-cap">L</span>/<span class="key-cap">Enter</span> Action</span>
+        <span><span class="key-cap">K</span> Supershot</span>
+      </div>
+
+      <!-- Mobile / Tablet Touch Controls for P1 -->
+      <div id="touch-controls">
+        <div class="touch-pad">
+          <button class="touch-btn" data-touch="left">◀</button>
+          <button class="touch-btn" data-touch="right">▶</button>
+          <button class="touch-btn" data-touch="dash" style="width:58px;">DASH</button>
+        </div>
+        <div class="touch-pad">
+          <button class="touch-btn" data-touch="super" style="width:62px; border-color:#fbbf24; color:#fbbf24;">SUPER</button>
+          <button class="touch-btn" data-touch="jump" style="width:58px;">JUMP</button>
+          <button class="touch-btn" data-touch="shoot" style="width:66px; background:#ea580c; border-color:#fde047;">SHOOT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================================================================
+     * HOOP STARS: ARCADE SHOWDOWN - COMPLETE ENGINE
+     * =========================================================================
+     * Architecture:
+     * 1. SoundFX Engine (Procedural Web Audio API synthesis)
+     * 2. Teams & Superstars Database (8 distinct franchises + unique Supershots)
+     * 3. Court Constants & Hoop Geometry (1280x720 logical space, High-DPI)
+     * 4. Physics & Game State (Players, Ball, Shot Meter, Rim/Net, AI, Particles)
+     * 5. Canvas Renderer (Arena, Crowd, Scoreboard, Big-Head Caricatures, FX)
+     * 6. UI & Tournament Bracket Controller
+     */
+
+    (() => {
+      'use strict';
+
+      /* =========================================================================
+         1. PROCEDURAL WEB AUDIO SOUND ENGINE
+         ========================================================================= */
+      class SoundEngine {
+        constructor() {
+          this.ctx = null;
+          this.enabled = true;
+        }
+
+        ensureContext() {
+          if (!this.enabled) return false;
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+              this.ctx = new AudioCtx();
+            }
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+          return !!this.ctx;
+        }
+
+        toggle() {
+          this.enabled = !this.enabled;
+          if (this.enabled) this.ensureContext();
+          return this.enabled;
+        }
+
+        playDribble() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(145, now);
+          osc.frequency.exponentialRampToValueAtTime(52, now + 0.11);
+
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.13);
+        }
+
+        playSqueak() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          const baseFreq = 2100 + Math.random() * 500;
+          osc.frequency.setValueAtTime(baseFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.25, now + 0.04);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.85, now + 0.08);
+
+          gain.gain.setValueAtTime(0.045, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.095);
+        }
+
+        playWhistle() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const lfo = this.ctx.createOscillator();
+          const lfoGain = this.ctx.createGain();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(2850, now);
+
+          lfo.type = 'sine';
+          lfo.frequency.setValueAtTime(34, now);
+          lfoGain.gain.setValueAtTime(90, now);
+
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.14, now + 0.03);
+          gain.gain.setValueAtTime(0.14, now + 0.34);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.44);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          lfo.start(now);
+          osc.stop(now + 0.45);
+          lfo.stop(now + 0.45);
+        }
+
+        playSwish() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const bufferSize = Math.floor(this.ctx.sampleRate * 0.28);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+          }
+
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(1600, now);
+          filter.frequency.exponentialRampToValueAtTime(3800, now + 0.12);
+          filter.frequency.exponentialRampToValueAtTime(1200, now + 0.28);
+          filter.Q.value = 1.8;
+
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.28, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+          noise.start(now);
+        }
+
+        playRimClank() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          [320, 515, 790].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = idx === 0 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.88, now + 0.18);
+
+            gain.gain.setValueAtTime(0.14 / (idx + 1), now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.21);
+          });
+        }
+
+        playDunk() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.exponentialRampToValueAtTime(34, now + 0.35);
+
+          gain.gain.setValueAtTime(0.45, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.4);
+
+          this.playRimClank();
+          this.playCrowdCheer(0.32);
+        }
+
+        playBlock() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(210, now);
+          osc.frequency.exponentialRampToValueAtTime(65, now + 0.16);
+
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        }
+
+        playSteal() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(190, now + 0.09);
+
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.11);
+        }
+
+        playSupershot() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc2.type = 'sine';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.36);
+
+          osc2.frequency.setValueAtTime(330, now);
+          osc2.frequency.exponentialRampToValueAtTime(1320, now + 0.36);
+
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+
+          osc.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc2.start(now);
+          osc.stop(now + 0.44);
+          osc2.stop(now + 0.44);
+        }
+
+        playCrowdCheer(volume = 0.22) {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          const dur = 0.85;
+          const bufferSize = Math.floor(this.ctx.sampleRate * dur);
+          const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            const env = Math.sin((i / bufferSize) * Math.PI);
+            data[i] = (Math.random() * 2 - 1) * env;
+          }
+
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(950, now);
+          filter.frequency.linearRampToValueAtTime(1450, now + 0.25);
+          filter.frequency.linearRampToValueAtTime(750, now + dur);
+
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(volume, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.ctx.destination);
+          noise.start(now);
+        }
+
+        playBuzzer() {
+          if (!this.ensureContext()) return;
+          const now = this.ctx.currentTime;
+          [138, 185].forEach((freq) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.setValueAtTime(0.22, now + 0.55);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.75);
+          });
+        }
+      }
+
+      const sfx = new SoundEngine();
+
+      /* =========================================================================
+         2. 8 SELECTABLE TEAMS & SUPERSTAR CARICATURE ROSTER
+         ========================================================================= */
+      const TEAMS = [
+        {
+          id: 'la',
+          name: 'LA Gold',
+          short: 'LAL',
+          primary: '#552583',
+          secondary: '#FDB927',
+          textColor: '#FDB927',
+          starName: 'King L.A.',
+          number: '23',
+          skin: '#8d5524',
+          hairStyle: 'fade_beard',
+          hairColor: '#18181b',
+          headband: '#FDB927',
+          supershotName: 'Skywalker Mega Dunk',
+          supershotType: 'MEGA_DUNK',
+          trailColors: ['#FDB927', '#7e22ce', '#ffffff']
+        },
+        {
+          id: 'chi',
+          name: 'Chicago Red',
+          short: 'CHI',
+          primary: '#CE1141',
+          secondary: '#111111',
+          textColor: '#FFFFFF',
+          starName: 'Air Chi',
+          number: '23',
+          skin: '#7a4928',
+          hairStyle: 'bald_band',
+          hairColor: '#111111',
+          headband: '#CE1141',
+          supershotName: 'Airborne Fireball 3PT',
+          supershotType: 'FIREBALL_SHOT',
+          trailColors: ['#ef4444', '#f97316', '#fde047']
+        },
+        {
+          id: 'mia',
+          name: 'Miami Neon',
+          short: 'MIA',
+          primary: '#00A3AD',
+          secondary: '#FF2A85',
+          textColor: '#FFFFFF',
+          starName: 'Flash Vice',
+          number: '3',
+          skin: '#9c6234',
+          hairStyle: 'spiky',
+          hairColor: '#111827',
+          headband: '#FF2A85',
+          supershotName: 'Lightning Steal & Slam',
+          supershotType: 'LIGHTNING_SLAM',
+          trailColors: ['#00f5d4', '#ff2a85', '#ffffff']
+        },
+        {
+          id: 'bay',
+          name: 'Bay Blue',
+          short: 'GSW',
+          primary: '#1D428A',
+          secondary: '#FFC72C',
+          textColor: '#FFC72C',
+          starName: 'Chef Splash',
+          number: '30',
+          skin: '#c68642',
+          hairStyle: 'curly_fade',
+          hairColor: '#27272a',
+          headband: '#1D428A',
+          supershotName: 'Logo Splash Bomb',
+          supershotType: 'SPLASH_BOMB',
+          trailColors: ['#38bdf8', '#FFC72C', '#ffffff']
+        },
+        {
+          id: 'bos',
+          name: 'Boston Clover',
+          short: 'BOS',
+          primary: '#007A33',
+          secondary: '#FFFFFF',
+          textColor: '#FFFFFF',
+          starName: 'Celtic Titan',
+          number: '0',
+          skin: '#a56b46',
+          hairStyle: 'mohawk',
+          hairColor: '#18181b',
+          headband: '#007A33',
+          supershotName: 'Thunder Alley-Oop',
+          supershotType: 'ALLEY_OOP',
+          trailColors: ['#22c55e', '#86efac', '#ffffff']
+        },
+        {
+          id: 'bkn',
+          name: 'Brooklyn Night',
+          short: 'BKN',
+          primary: '#18181B',
+          secondary: '#CBD5E1',
+          textColor: '#FFFFFF',
+          starName: 'Ky-Shadow',
+          number: '11',
+          skin: '#8d5524',
+          hairStyle: 'afro',
+          hairColor: '#09090b',
+          headband: '#CBD5E1',
+          supershotName: 'Ankle-Breaker Dash Shot',
+          supershotType: 'ANKLE_SHOT',
+          trailColors: ['#e2e8f0', '#64748b', '#38bdf8']
+        },
+        {
+          id: 'phx',
+          name: 'Phoenix Sunburst',
+          short: 'PHX',
+          primary: '#291749',
+          secondary: '#E56020',
+          textColor: '#F97316',
+          starName: 'Solar Flare',
+          number: '1',
+          skin: '#b57c4c',
+          hairStyle: 'waves',
+          hairColor: '#1c1917',
+          headband: '#E56020',
+          supershotName: 'Solar Flare Dunk',
+          supershotType: 'SOLAR_DUNK',
+          trailColors: ['#f97316', '#facc15', '#a855f7']
+        },
+        {
+          id: 'dal',
+          name: 'Dallas Cyber',
+          short: 'DAL',
+          primary: '#00538C',
+          secondary: '#00E5FF',
+          textColor: '#00E5FF',
+          starName: 'Luka Magic',
+          number: '77',
+          skin: '#e0ac69',
+          hairStyle: 'wavy_euro',
+          hairColor: '#4a3525',
+          headband: '#00E5FF',
+          supershotName: 'Step-Back Meteor',
+          supershotType: 'STEPBACK_METEOR',
+          trailColors: ['#00E5FF', '#3b82f6', '#ffffff']
+        }
+      ];
+
+      /* =========================================================================
+         3. COURT GEOMETRY & PHYSICS CONSTANTS (1280 x 720 LOGICAL CANVAS)
+         ========================================================================= */
+      const W = 1280;
+      const H = 720;
+      const FLOOR_Y = 615;
+      const GRAVITY = 2150;
+      const BALL_RADIUS = 17;
+
+      // Left Hoop (P1 Defends, P2 Attacks)
+      const LEFT_HOOP = {
+        backboardX: 112,
+        backboardTop: 222,
+        backboardBottom: 356,
+        rimX: 158,
+        rimY: 326,
+        rimRadius: 34,
+        threePtX: 415,
+        shake: 0,
+        netWave: 0
+      };
+
+      // Right Hoop (P2 Defends, P1 Attacks)
+      const RIGHT_HOOP = {
+        backboardX: 1168,
+        backboardTop: 222,
+        backboardBottom: 356,
+        rimX: 1122,
+        rimY: 326,
+        rimRadius: 34,
+        threePtX: 865,
+        shake: 0,
+        netWave: 0
+      };
+
+      const MATCH_DURATION = 60; // 60 seconds regulation
+      const SHOT_CLOCK_DURATION = 18; // 18 seconds shot clock
+
+      /* =========================================================================
+         4. GLOBAL APPLICATION & GAME STATE
+         ========================================================================= */
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const appState = {
+        screen: 'SETUP', // 'SETUP' | 'BRACKET' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'
+        mode: '1P_QUICK', // '1P_QUICK' | '1P_TOURNAMENT' | '2P_LOCAL'
+        difficulty: 'PRO', // 'ROOKIE' | 'PRO' | 'ALLSTAR'
+        p1TeamIdx: 0,
+        p2TeamIdx: 1,
+        tournament: null
+      };
+
+      // Input state
+      const keys = {};
+      const justPressed = {};
+      const justReleased = {};
+
+      // Match runtime state
+      let match = null;
+
+      /* =========================================================================
+         5. INPUT HANDLING (KEYBOARD + TOUCH)
+         ========================================================================= */
+      window.addEventListener('keydown', (e) => {
+        const code = e.code;
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) {
+          e.preventDefault();
+        }
+        if (!keys[code]) {
+          justPressed[code] = true;
+        }
+        keys[code] = true;
+
+        // Quick Pause Toggle
+        if (code === 'KeyP' || code === 'Escape') {
+          if (appState.screen === 'PLAYING') {
+            setScreen('PAUSED');
+          } else if (appState.screen === 'PAUSED') {
+            setScreen('PLAYING');
+          }
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        const code = e.code;
+        keys[code] = false;
+        justReleased[code] = true;
+      });
+
+      function clearEdgeInputs() {
+        for (const k in justPressed) delete justPressed[k];
+        for (const k in justReleased) delete justReleased[k];
+      }
+
+      // Bind Mobile/Tablet Touch Buttons to P1 Keys
+      const touchMap = {
+        left: 'KeyA',
+        right: 'KeyD',
+        jump: 'KeyW',
+        dash: 'KeyS',
+        shoot: 'KeyX',
+        super: 'KeyZ'
+      };
+
+      document.querySelectorAll('[data-touch]').forEach((btn) => {
+        const action = btn.getAttribute('data-touch');
+        const mappedKey = touchMap[action];
+        if (!mappedKey) return;
+
+        const press = (ev) => {
+          ev.preventDefault();
+          sfx.ensureContext();
+          if (!keys[mappedKey]) justPressed[mappedKey] = true;
+          keys[mappedKey] = true;
+        };
+        const release = (ev) => {
+          ev.preventDefault();
+          keys[mappedKey] = false;
+          justReleased[mappedKey] = true;
+        };
+
+        btn.addEventListener('touchstart', press, { passive: false });
+        btn.addEventListener('touchend', release, { passive: false });
+        btn.addEventListener('mousedown', press);
+        btn.addEventListener('mouseup', release);
+        btn.addEventListener('mouseleave', () => {
+          if (keys[mappedKey]) {
+            keys[mappedKey] = false;
+            justReleased[mappedKey] = true;
+          }
+        });
+      });
+
+      function getPlayerInputs(playerIndex) {
+        const is1P = appState.mode !== '2P_LOCAL';
+        if (playerIndex === 0) {
+          const left = keys['KeyA'] || (is1P && keys['ArrowLeft']);
+          const right = keys['KeyD'] || (is1P && keys['ArrowRight']);
+          const jumpDown = justPressed['KeyW'] || (is1P && justPressed['ArrowUp']);
+          const dashDown = justPressed['KeyS'] || (is1P && justPressed['ArrowDown']);
+          const shootHeld = keys['KeyX'] || keys['Space'];
+          const shootDown = justPressed['KeyX'] || justPressed['Space'];
+          const shootUp = justReleased['KeyX'] || justReleased['Space'];
+          const superDown = justPressed['KeyZ'] || (is1P && (justPressed['ShiftLeft'] || justPressed['ShiftRight']));
+          return { left, right, jumpDown, dashDown, shootHeld, shootDown, shootUp, superDown };
+        } else {
+          const left = keys['ArrowLeft'];
+          const right = keys['ArrowRight'];
+          const jumpDown = justPressed['ArrowUp'];
+          const dashDown = justPressed['ArrowDown'];
+          const shootHeld = keys['KeyL'] || keys['Enter'];
+          const shootDown = justPressed['KeyL'] || justPressed['Enter'];
+          const shootUp = justReleased['KeyL'] || justReleased['Enter'];
+          const superDown = justPressed['KeyK'] || justPressed['KeyM'];
+          return { left, right, jumpDown, dashDown, shootHeld, shootDown, shootUp, superDown };
+        }
+      }
+
+      /* =========================================================================
+         6. PLAYER, BALL & MATCH INITIALIZATION
+         ========================================================================= */
+      function createPlayer(index, team, isCPU) {
+        const startX = index === 0 ? 410 : 870;
+        return {
+          index,
+          team,
+          isCPU,
+          x: startX,
+          y: FLOOR_Y,
+          vx: 0,
+          vy: 0,
+          facing: index === 0 ? 1 : -1,
+          grounded: true,
+          score: 0,
+          superMeter: 35, // Starts partially charged for faster arcade excitement
+          dribblePhase: 0,
+          runCycle: 0,
+
+          // Dash & Crossover
+          dashTimer: 0,
+          dashCooldown: 0,
+          afterimages: [],
+          stunTimer: 0,
+
+          // Shooting & Shot Meter
+          chargingShot: false,
+          shotCharge: 0, // 0..1
+          shotSweetStart: 0.56,
+          shotSweetEnd: 0.78,
+          shotAnimTimer: 0,
+
+          // Dunking
+          dunking: false,
+          dunkStyle: 'TOMAHAWK', // 'TOMAHAWK' | 'WINDMILL' | 'ALLEY_OOP' | 'MEGA'
+          dunkProgress: 0,
+          dunkStartX: 0,
+          dunkStartY: 0,
+          dunkTargetHoop: null,
+          dunkPoints: 2,
+          dunkIsSuper: false,
+          rimHangTimer: 0,
+
+          // Defense Actions
+          stealTimer: 0,
+          stealCooldown: 0,
+          blockTimer: 0,
+          blockCooldown: 0,
+
+          // Supershot Active State
+          superActiveTimer: 0,
+
+          // AI state
+          aiTimer: 0,
+          aiDecision: 'ADVANCE',
+          aiDesiredCharge: 0.67
+        };
+      }
+
+      function startNewMatch(p1TeamIdx, p2TeamIdx) {
+        const p1Team = TEAMS[p1TeamIdx];
+        const p2Team = TEAMS[p2TeamIdx];
+        const isCPU = appState.mode !== '2P_LOCAL';
+
+        LEFT_HOOP.shake = 0;
+        LEFT_HOOP.netWave = 0;
+        RIGHT_HOOP.shake = 0;
+        RIGHT_HOOP.netWave = 0;
+
+        match = {
+          timeLeft: MATCH_DURATION,
+          overtime: false,
+          shotClock: SHOT_CLOCK_DURATION,
+          players: [
+            createPlayer(0, p1Team, false),
+            createPlayer(1, p2Team, isCPU)
+          ],
+          ball: {
+            x: W / 2,
+            y: 230,
+            vx: (Math.random() < 0.5 ? -1 : 1) * 45,
+            vy: -360,
+            spin: 0,
+            angle: 0,
+            owner: null, // null | 0 | 1
+            lastShooter: null,
+            inFlight: true,
+            shotPoints: 2,
+            isGreenRelease: false,
+            isSupershot: false,
+            superTrailColors: null,
+            touchedRim: false,
+            pickupCooldown: 0.25,
+            trail: []
+          },
+          inboundTimer: 0,
+          inboundTo: null,
+          screenShake: 0,
+          flashAlpha: 0,
+          flashColor: '#ffffff',
+          popups: [],
+          particles: [],
+          confetti: [],
+          crowdExcitement: 0.5,
+          roundLabel: appState.mode === '1P_TOURNAMENT' && appState.tournament
+            ? appState.tournament.roundNames[appState.tournament.currentRound]
+            : (appState.mode === '2P_LOCAL' ? '2P LOCAL SHOWDOWN' : `VS CPU (${appState.difficulty})`)
+        };
+
+        setScreen('PLAYING');
+        sfx.playWhistle();
+        spawnPopup(W / 2, 260, 'TIP-OFF!', '#fbbf24', 1.35);
+      }
+
+      /* =========================================================================
+         7. CALLOUT POPUPS, PARTICLES & CONFETTI HELPERS
+         ========================================================================= */
+      function spawnPopup(x, y, text, color = '#fde047', scale = 1.0) {
+        if (!match) return;
+        match.popups.push({
+          x,
+          y,
+          vy: -65,
+          text,
+          color,
+          scale,
+          life: 1.15,
+          maxLife: 1.15
+        });
+      }
+
+      function spawnParticles(x, y, colors, count = 18, speed = 280) {
+        if (!match) return;
+        for (let i = 0; i < count; i++) {
+          const ang = Math.random() * Math.PI * 2;
+          const spd = (0.3 + Math.random() * 0.7) * speed;
+          match.particles.push({
+            x,
+            y,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd - 60,
+            size: 3 + Math.random() * 5,
+            color: colors[i % colors.length],
+            life: 0.45 + Math.random() * 0.35,
+            maxLife: 0.8
+          });
+        }
+      }
+
+      function spawnVictoryConfetti() {
+        if (!match) return;
+        const colors = ['#fbbf24', '#38bdf8', '#f43f5e', '#22c55e', '#a855f7', '#ffffff'];
+        for (let i = 0; i < 110; i++) {
+          match.confetti.push({
+            x: Math.random() * W,
+            y: -20 - Math.random() * 350,
+            vx: (Math.random() - 0.5) * 140,
+            vy: 120 + Math.random() * 190,
+            w: 7 + Math.random() * 7,
+            h: 4 + Math.random() * 5,
+            rot: Math.random() * Math.PI * 2,
+            vrot: (Math.random() - 0.5) * 8,
+            color: colors[i % colors.length]
+          });
+        }
+      }
+
+      /* =========================================================================
+         8. CORE GAMEPLAY MECHANICS (SHOOTING, DUNKING, STEAL, BLOCK, SUPERSHOTS)
+         ========================================================================= */
+      function getAttackingHoop(playerIdx) {
+        return playerIdx === 0 ? RIGHT_HOOP : LEFT_HOOP;
+      }
+
+      function getDefendingHoop(playerIdx) {
+        return playerIdx === 0 ? LEFT_HOOP : RIGHT_HOOP;
+      }
+
+      function isBehindThreePointLine(playerIdx, x) {
+        if (playerIdx === 0) {
+          return x < RIGHT_HOOP.threePtX;
+        } else {
+          return x > LEFT_HOOP.threePtX;
+        }
+      }
+
+      function addSuperMeter(player, amount) {
+        player.superMeter = Math.min(100, Math.max(0, player.superMeter + amount));
+      }
+
+      function canAttemptDunk(player) {
+        const hoop = getAttackingHoop(player.index);
+        const distX = Math.abs(player.x - hoop.rimX);
+        const airborne = !player.grounded && player.y < FLOOR_Y - 35;
+        return airborne && distX < 215;
+      }
+
+      function startDunk(player, isSuper = false, customStyle = null) {
+        const hoop = getAttackingHoop(player.index);
+        player.chargingShot = false;
+        player.dunking = true;
+        player.dunkProgress = 0;
+        player.dunkStartX = player.x;
+        player.dunkStartY = player.y;
+        player.dunkTargetHoop = hoop;
+        player.dunkIsSuper = isSuper;
+        player.dunkStyle = customStyle || (Math.random() < 0.5 ? 'TOMAHAWK' : 'WINDMILL');
+        player.facing = player.index === 0 ? 1 : -1;
+
+        // Calculate points (2PT normally, or 3PT if Supershot dunk launched from behind 3PT arc!)
+        const behindArc = isBehindThreePointLine(player.index, player.x);
+        player.dunkPoints = (isSuper && behindArc) ? 3 : 2;
+
+        if (isSuper) {
+          spawnParticles(player.x, player.y - 50, player.team.trailColors, 26, 360);
+        }
+      }
+
+      function beginShotCharge(player) {
+        player.chargingShot = true;
+        player.shotCharge = 0;
+        player.facing = player.index === 0 ? 1 : -1;
+
+        // Jump on shot start if grounded
+        if (player.grounded) {
+          player.vy = -790;
+          player.grounded = false;
+        }
+
+        // Compute dynamic green sweet-spot width based on distance & defender contest
+        const hoop = getAttackingHoop(player.index);
+        const dist = Math.abs(player.x - hoop.rimX);
+        const opp = match.players[1 - player.index];
+        const oppDist = Math.hypot(player.x - opp.x, player.y - opp.y);
+        const contested = oppDist < 95 ? 0.05 : 0;
+
+        const baseWindow = dist > 620 ? 0.14 : (dist > 420 ? 0.18 : 0.22);
+        const windowSize = Math.max(0.11, baseWindow - contested);
+        player.shotSweetStart = 0.58;
+        player.shotSweetEnd = 0.58 + windowSize;
+      }
+
+      function releaseJumpShot(player, forceGreen = false, isSupershot = false) {
+        const ball = match.ball;
+        if (ball.owner !== player.index) {
+          player.chargingShot = false;
+          return;
+        }
+
+        const hoop = getAttackingHoop(player.index);
+        const releaseX = player.x + player.facing * 22;
+        const releaseY = player.y - 88;
+        const points = isBehindThreePointLine(player.index, player.x) ? 3 : 2;
+
+        const inGreen = forceGreen ||
+          (player.shotCharge >= player.shotSweetStart && player.shotCharge <= player.shotSweetEnd);
+
+        // Compute trajectory toward hoop rim
+        const dx = hoop.rimX - releaseX;
+        const dy = (hoop.rimY - 12) - releaseY;
+        const dist = Math.abs(dx);
+
+        // Flight time scales with horizontal distance for a high natural arc
+        let flightTime = Math.max(0.56, Math.min(1.02, 0.52 + dist / 1180));
+        if (isSupershot && player.team.supershotType === 'SPLASH_BOMB') {
+          flightTime += 0.18; // High rainbow bomb!
+        }
+
+        // Aim offset error if not a green release
+        let targetX = hoop.rimX;
+        if (!inGreen && !isSupershot) {
+          const centerSweet = (player.shotSweetStart + player.shotSweetEnd) * 0.5;
+          const timingDiff = player.shotCharge - centerSweet; // negative = early, positive = late
+          const opp = match.players[1 - player.index];
+          const contestPenalty = Math.hypot(player.x - opp.x, player.y - opp.y) < 95 ? 1.35 : 1.0;
+          const randomJitter = (Math.random() - 0.5) * 26;
+          targetX += timingDiff * 165 * contestPenalty + randomJitter;
+        }
+
+        const finalDx = targetX - releaseX;
+        const vx = finalDx / flightTime;
+        const vy = (dy - 0.5 * GRAVITY * flightTime * flightTime) / flightTime;
+
+        ball.owner = null;
+        ball.lastShooter = player.index;
+        ball.x = releaseX;
+        ball.y = releaseY;
+        ball.vx = vx;
+        ball.vy = vy;
+        ball.spin = player.facing * -9;
+        ball.inFlight = true;
+        ball.shotPoints = points;
+        ball.isGreenRelease = inGreen || isSupershot;
+        ball.isSupershot = isSupershot;
+        ball.superTrailColors = isSupershot ? player.team.trailColors : null;
+        ball.touchedRim = false;
+        ball.pickupCooldown = 0.28;
+        ball.trail = [];
+
+        player.chargingShot = false;
+        player.shotCharge = 0;
+        player.shotAnimTimer = 0.35;
+
+        if (inGreen && !isSupershot) {
+          spawnPopup(player.x, player.y - 125, 'PERFECT RELEASE!', '#22c55e', 0.92);
+        }
+      }
+
+      function activateSupershot(player) {
+        if (player.superMeter < 100 || match.inboundTimer > 0) return;
+
+        const opp = match.players[1 - player.index];
+        const ball = match.ball;
+        const type = player.team.supershotType;
+
+        // Special defensive/steal supershot for Miami Neon ('Lightning Steal & Slam')
+        if (type === 'LIGHTNING_SLAM' && ball.owner !== player.index) {
+          player.superMeter = 0;
+          player.superActiveTimer = 0.9;
+          sfx.playSupershot();
+          match.screenShake = 14;
+          match.flashColor = player.team.secondary;
+          match.flashAlpha = 0.35;
+
+          spawnParticles(player.x, player.y - 45, player.team.trailColors, 24, 340);
+          player.x = opp.x;
+          player.y = opp.y;
+          opp.stunTimer = 1.2;
+          ball.owner = player.index;
+          ball.inFlight = false;
+          match.shotClock = SHOT_CLOCK_DURATION;
+
+          spawnPopup(player.x, player.y - 130, 'LIGHTNING STEAL & SLAM!', '#00f5d4', 1.15);
+          startDunk(player, true, 'WINDMILL');
+          return;
+        }
+
+        // Otherwise player must hold the ball to unleash offensive Supershot
+        if (ball.owner !== player.index) return;
+
+        player.superMeter = 0;
+        player.superActiveTimer = 0.95;
+        player.chargingShot = false;
+        sfx.playSupershot();
+        match.screenShake = 14;
+        match.flashColor = player.team.secondary;
+        match.flashAlpha = 0.32;
+
+        spawnPopup(player.x, player.y - 135, `${player.team.supershotName.toUpperCase()}!`, '#fde047', 1.15);
+        spawnParticles(player.x, player.y - 55, player.team.trailColors, 28, 350);
+
+        switch (type) {
+          case 'MEGA_DUNK':
+            startDunk(player, true, 'MEGA');
+            break;
+
+          case 'LIGHTNING_SLAM':
+            startDunk(player, true, 'WINDMILL');
+            break;
+
+          case 'ALLEY_OOP':
+            startDunk(player, true, 'ALLEY_OOP');
+            break;
+
+          case 'SOLAR_DUNK':
+            startDunk(player, true, 'TOMAHAWK');
+            break;
+
+          case 'ANKLE_SHOT':
+            // Stuns defender in place and fires unblockable fadeaway
+            opp.stunTimer = 1.5;
+            spawnPopup(opp.x, opp.y - 110, 'ANKLE BREAKER!', '#38bdf8', 1.05);
+            player.vx = -player.facing * 260;
+            player.vy = -780;
+            player.grounded = false;
+            releaseJumpShot(player, true, true);
+            break;
+
+          case 'STEPBACK_METEOR':
+            // Step-back shockwave + meteor shot
+            opp.stunTimer = 1.1;
+            player.vx = -player.facing * 320;
+            player.vy = -800;
+            player.grounded = false;
+            releaseJumpShot(player, true, true);
+            break;
+
+          case 'FIREBALL_SHOT':
+          case 'SPLASH_BOMB':
+          default:
+            player.vy = -850;
+            player.grounded = false;
+            releaseJumpShot(player, true, true);
+            break;
+        }
+      }
+
+      function attemptSteal(defender) {
+        if (defender.stealCooldown > 0 || defender.stunTimer > 0 || match.inboundTimer > 0) return;
+
+        defender.stealTimer = 0.24;
+        defender.stealCooldown = 0.65;
+        sfx.playSteal();
+
+        const opp = match.players[1 - defender.index];
+        const ball = match.ball;
+
+        if (ball.owner === opp.index && !opp.dunking && opp.superActiveTimer <= 0) {
+          const dist = Math.hypot(defender.x - opp.x, defender.y - opp.y);
+          if (dist < 88) {
+            // Check if opponent just dashed (crossover evasion)
+            if (opp.dashTimer > 0.06) {
+              defender.stunTimer = 0.75;
+              spawnPopup(opp.x, opp.y - 115, 'CROSSED UP!', '#38bdf8', 1.0);
+              return;
+            }
+
+            // Successful Pickpocket!
+            ball.owner = defender.index;
+            ball.inFlight = false;
+            opp.chargingShot = false;
+            opp.stunTimer = 0.45;
+            match.shotClock = SHOT_CLOCK_DURATION;
+            addSuperMeter(defender, 16);
+            match.screenShake = 7;
+
+            spawnParticles(ball.x, ball.y, ['#38bdf8', '#fde047', '#ffffff'], 16, 240);
+            spawnPopup(defender.x, defender.y - 125, 'PICKPOCKET!', '#38bdf8', 1.15);
+          }
+        }
+      }
+
+      function attemptBlock(defender) {
+        if (defender.blockCooldown > 0 || defender.stunTimer > 0 || match.inboundTimer > 0) return;
+
+        defender.blockTimer = 0.34;
+        defender.blockCooldown = 0.62;
+        if (defender.grounded) {
+          defender.vy = -830;
+          defender.grounded = false;
+        }
+
+        const ball = match.ball;
+        const opp = match.players[1 - defender.index];
+
+        // Can block a dunk attempt mid-air (unless it's a Supershot dunk)
+        if (opp.dunking && !opp.dunkIsSuper) {
+          const dist = Math.hypot(defender.x - opp.x, (defender.y - 70) - (opp.y - 70));
+          if (dist < 105) {
+            opp.dunking = false;
+            opp.vy = 160;
+            ball.owner = null;
+            ball.inFlight = true;
+            ball.isSupershot = false;
+            ball.vx = (defender.index === 0 ? 1 : -1) * 340;
+            ball.vy = -380;
+            ball.pickupCooldown = 0.3;
+
+            addSuperMeter(defender, 20);
+            match.screenShake = 14;
+            sfx.playBlock();
+            spawnParticles(opp.x, opp.y - 60, ['#ef4444', '#fde047', '#ffffff'], 24, 340);
+            spawnPopup(defender.x, defender.y - 135, 'REJECTED!', '#ef4444', 1.3);
+            return;
+          }
+        }
+
+        // Can block a shot in flight (unless Supershot)
+        if (ball.owner === null && ball.inFlight && !ball.isSupershot && ball.lastShooter !== defender.index) {
+          const handX = defender.x + defender.facing * 20;
+          const handY = defender.y - 95;
+          const dist = Math.hypot(ball.x - handX, ball.y - handY);
+          if (dist < 76) {
+            ball.vx = (defender.index === 0 ? 1 : -1) * 380;
+            ball.vy = -340;
+            ball.isGreenRelease = false;
+            ball.pickupCooldown = 0.25;
+
+            addSuperMeter(defender, 20);
+            match.screenShake = 13;
+            sfx.playBlock();
+            spawnParticles(ball.x, ball.y, ['#ef4444', '#fde047', '#ffffff'], 22, 320);
+            spawnPopup(defender.x, defender.y - 135, 'REJECTED!', '#ef4444', 1.3);
+          }
+        }
+      }
+
+      /* =========================================================================
+         9. SCORING & AUTOMATIC INBOUND POSSESSION
+         ========================================================================= */
+      function registerBasket(scorerIdx, points, isDunk, isSwish, isSupershot) {
+        const scorer = match.players[scorerIdx];
+        const scoredOnIdx = 1 - scorerIdx;
+        const hoop = getAttackingHoop(scorerIdx);
+
+        scorer.score += points;
+        hoop.netWave = 1.0;
+        if (isDunk || isSupershot) {
+          hoop.shake = 1.0;
+          match.screenShake = isSupershot ? 18 : 14;
+          sfx.playDunk();
+        } else if (isSwish) {
+          sfx.playSwish();
+          sfx.playCrowdCheer(0.24);
+        } else {
+          sfx.playSwish();
+          sfx.playCrowdCheer(0.18);
+        }
+
+        // Build Supershot Meter on score
+        if (!isSupershot) {
+          addSuperMeter(scorer, isDunk ? 24 : (points === 3 ? 26 : 18));
+        }
+
+        match.crowdExcitement = 1.0;
+        spawnParticles(hoop.rimX, hoop.rimY + 10, [scorer.team.primary, scorer.team.secondary, '#ffffff'], 24, 300);
+
+        // Arcade Callouts
+        if (isSupershot) {
+          spawnPopup(hoop.rimX, hoop.rimY - 75, `SUPERSHOT +${points} PTS!`, '#fde047', 1.35);
+        } else if (isDunk) {
+          spawnPopup(hoop.rimX, hoop.rimY - 75, 'MONSTER DUNK! +2 PTS!', '#f97316', 1.3);
+        } else if (points === 3) {
+          spawnPopup(hoop.rimX, hoop.rimY - 75, isSwish ? 'SWISH! +3 PTS!' : 'DOWNTOWN +3 PTS!', '#38bdf8', 1.28);
+        } else {
+          spawnPopup(hoop.rimX, hoop.rimY - 75, isSwish ? 'SWISH! +2 PTS!' : '+2 PTS!', '#22c55e', 1.18);
+        }
+
+        // Check Sudden Death Overtime Victory
+        if (match.overtime) {
+          endMatch();
+          return;
+        }
+
+        // Trigger smooth automatic inbound after brief celebration
+        match.inboundTimer = 1.05;
+        match.inboundTo = scoredOnIdx;
+        match.ball.owner = null;
+        match.ball.inFlight = false;
+        match.ball.isSupershot = false;
+        match.ball.vx = 0;
+        match.ball.vy = 180;
+      }
+
+      function executeInbound() {
+        const receiver = match.players[match.inboundTo];
+        const other = match.players[1 - match.inboundTo];
+
+        receiver.x = receiver.index === 0 ? 225 : W - 225;
+        receiver.y = FLOOR_Y;
+        receiver.vx = 0;
+        receiver.vy = 0;
+        receiver.grounded = true;
+        receiver.facing = receiver.index === 0 ? 1 : -1;
+        receiver.chargingShot = false;
+        receiver.dunking = false;
+
+        other.x = other.index === 0 ? 450 : W - 450;
+        other.y = FLOOR_Y;
+        other.vx = 0;
+        other.vy = 0;
+        other.grounded = true;
+        other.chargingShot = false;
+        other.dunking = false;
+
+        match.ball.owner = receiver.index;
+        match.ball.inFlight = false;
+        match.ball.isSupershot = false;
+        match.ball.trail = [];
+        match.shotClock = SHOT_CLOCK_DURATION;
+        match.inboundTimer = 0;
+        match.inboundTo = null;
+      }
+
+      function endMatch() {
+        const p1 = match.players[0];
+        const p2 = match.players[1];
+
+        // If tied at 0:00, enter SUDDEN DEATH OVERTIME!
+        if (p1.score === p2.score) {
+          match.overtime = true;
+          match.timeLeft = 0;
+          match.shotClock = SHOT_CLOCK_DURATION;
+          sfx.playWhistle();
+          spawnPopup(W / 2, 260, 'SUDDEN DEATH OVERTIME!', '#f43f5e', 1.4);
+          return;
+        }
+
+        sfx.playBuzzer();
+        spawnVictoryConfetti();
+        setScreen('GAMEOVER');
+
+        const p1Won = p1.score > p2.score;
+        const winner = p1Won ? p1 : p2;
+
+        const headingEl = document.getElementById('gameover-heading');
+        const scoreEl = document.getElementById('gameover-scoreline');
+        const subEl = document.getElementById('gameover-subtext');
+        const trophyEl = document.getElementById('gameover-trophy');
+        const primaryBtn = document.getElementById('btn-gameover-primary');
+
+        scoreEl.textContent = `${p1.score}  -  ${p2.score}`;
+
+        if (appState.mode === '1P_TOURNAMENT' && appState.tournament) {
+          const t = appState.tournament;
+          if (p1Won) {
+            t.advanceWinner(p1.team.id);
+            if (t.currentRound >= 2) {
+              trophyEl.textContent = '🏆👑';
+              headingEl.textContent = `${p1.team.name.toUpperCase()} ARE CHAMPIONS!`;
+              subEl.textContent = 'You conquered the Hoop Stars Championship Bracket!';
+              primaryBtn.textContent = 'VIEW BRACKET';
+            } else {
+              trophyEl.textContent = '🔥🏀';
+              headingEl.textContent = 'ROUND VICTORY!';
+              subEl.textContent = `Advancing to ${t.roundNames[t.currentRound + 1]}!`;
+              primaryBtn.textContent = 'NEXT ROUND';
+            }
+          } else {
+            trophyEl.textContent = '💔🏀';
+            headingEl.textContent = 'ELIMINATED!';
+            subEl.textContent = `${p2.team.name} knocked you out of the tournament.`;
+            primaryBtn.textContent = 'RETRY TOURNAMENT';
+          }
+        } else {
+          trophyEl.textContent = '🏆';
+          if (appState.mode === '2P_LOCAL') {
+            headingEl.textContent = p1Won
+              ? `PLAYER 1 (${p1.team.name.toUpperCase()}) WINS!`
+              : `PLAYER 2 (${p2.team.name.toUpperCase()}) WINS!`;
+          } else {
+            headingEl.textContent = p1Won
+              ? `VICTORY! ${p1.team.name.toUpperCase()} WINS!`
+              : `DEFEAT! ${p2.team.name.toUpperCase()} WINS!`;
+          }
+          subEl.textContent = `${winner.team.starName} dominated the hardwood!`;
+          primaryBtn.textContent = 'REMATCH';
+        }
+      }
+
+      /* =========================================================================
+         10. SMART CPU AI CONTROLLER
+         ========================================================================= */
+      function updateCPU(cpu, dt) {
+        const human = match.players[0];
+        const ball = match.ball;
+        const myHoop = getAttackingHoop(cpu.index); // LEFT_HOOP
+        const defHoop = getDefendingHoop(cpu.index); // RIGHT_HOOP
+
+        // Difficulty tuning parameters
+        const cfg = {
+          ROOKIE: { speedMult: 0.76, reaction: 0.36, greenAcc: 0.25, stealChance: 0.28, blockChance: 0.30, dashChance: 0.15 },
+          PRO:    { speedMult: 0.92, reaction: 0.20, greenAcc: 0.58, stealChance: 0.55, blockChance: 0.62, dashChance: 0.42 },
+          ALLSTAR:{ speedMult: 1.04, reaction: 0.11, greenAcc: 0.85, stealChance: 0.80, blockChance: 0.86, dashChance: 0.72 }
+        }[appState.difficulty];
+
+        if (cpu.stunTimer > 0 || match.inboundTimer > 0) return;
+
+        // Trigger Supershot immediately when charged and advantageous
+        if (cpu.superMeter >= 100) {
+          if (cpu.team.supershotType === 'LIGHTNING_SLAM' || ball.owner === cpu.index) {
+            activateSupershot(cpu);
+            return;
+          }
+        }
+
+        // If charging a jump shot, release at target meter charge
+        if (cpu.chargingShot) {
+          if (cpu.shotCharge >= cpu.aiDesiredCharge) {
+            releaseJumpShot(cpu, false, false);
+          }
+          return;
+        }
+
+        if (cpu.dunking) return;
+
+        cpu.aiTimer -= dt;
+        const moveSpeed = 355 * cfg.speedMult;
+
+        // OFFENSE: CPU holds the ball
+        if (ball.owner === cpu.index) {
+          const distToRim = cpu.x - myHoop.rimX;
+          const distToDefender = Math.abs(cpu.x - human.x);
+
+          if (cpu.aiTimer <= 0) {
+            cpu.aiTimer = cfg.reaction + Math.random() * 0.15;
+            if (distToRim < 210) {
+              cpu.aiDecision = 'DUNK';
+            } else if (distToRim < 380 && distToDefender > 125 && Math.random() < 0.45) {
+              cpu.aiDecision = 'SHOOT_3';
+            } else if (distToRim < 280 && Math.random() < 0.35) {
+              cpu.aiDecision = 'SHOOT_2';
+            } else {
+              cpu.aiDecision = 'DRIVE';
+            }
+          }
+
+          // Dash crossover if defender closes in
+          if (distToDefender < 105 && cpu.dashCooldown <= 0 && Math.random() < cfg.dashChance * dt * 4) {
+            cpu.dashTimer = 0.22;
+            cpu.dashCooldown = 1.15;
+            cpu.vx = -680;
+            sfx.playSqueak();
+          }
+
+          if (cpu.aiDecision === 'DUNK') {
+            if (distToRim > 140) {
+              cpu.vx = -moveSpeed;
+              cpu.facing = -1;
+            }
+            if (cpu.grounded && distToRim < 195) {
+              cpu.vy = -830;
+              cpu.grounded = false;
+            }
+            if (canAttemptDunk(cpu)) {
+              startDunk(cpu, false);
+            }
+          } else if (cpu.aiDecision === 'SHOOT_3' || cpu.aiDecision === 'SHOOT_2') {
+            cpu.vx = 0;
+            cpu.facing = -1;
+            const center = (cpu.shotSweetStart + cpu.shotSweetEnd) * 0.5;
+            const jitter = (1 - cfg.greenAcc) * (Math.random() - 0.5) * 0.32;
+            cpu.aiDesiredCharge = Math.max(0.35, Math.min(0.92, center + jitter));
+            beginShotCharge(cpu);
+          } else {
+            // Drive toward left hoop
+            if (distToRim > 135) {
+              cpu.vx = -moveSpeed;
+              cpu.facing = -1;
+            } else {
+              cpu.aiDecision = 'DUNK';
+            }
+          }
+        }
+        // DEFENSE: Human holds the ball
+        else if (ball.owner === human.index) {
+          // Guard between human and CPU's hoop (RIGHT_HOOP)
+          const guardX = Math.min(defHoop.rimX - 45, human.x + 82);
+          const diffX = guardX - cpu.x;
+          if (Math.abs(diffX) > 14) {
+            cpu.vx = Math.sign(diffX) * moveSpeed;
+            cpu.facing = Math.sign(diffX);
+          } else {
+            cpu.vx = 0;
+            cpu.facing = human.x < cpu.x ? -1 : 1;
+          }
+
+          // Contest jump shots or dunks
+          if ((human.chargingShot || human.dunking) && Math.abs(cpu.x - human.x) < 130) {
+            if (cpu.grounded && Math.random() < cfg.blockChance * dt * 8) {
+              attemptBlock(cpu);
+            }
+          }
+
+          // Attempt steal when close
+          if (Math.abs(cpu.x - human.x) < 76 && cpu.stealCooldown <= 0) {
+            if (Math.random() < cfg.stealChance * dt * 3.2) {
+              attemptSteal(cpu);
+            }
+          }
+        }
+        // LOOSE BALL: Chase rebound
+        else {
+          const diffX = ball.x - cpu.x;
+          if (Math.abs(diffX) > 12) {
+            cpu.vx = Math.sign(diffX) * moveSpeed * 1.05;
+            cpu.facing = Math.sign(diffX);
+          }
+          if (ball.y < cpu.y - 60 && Math.abs(diffX) < 90 && cpu.grounded && ball.inFlight) {
+            if (ball.lastShooter !== cpu.index && Math.random() < cfg.blockChance * dt * 6) {
+              attemptBlock(cpu);
+            } else if (ball.vy > 0) {
+              cpu.vy = -800;
+              cpu.grounded = false;
+            }
+          }
+        }
+      }
+
+      /* =========================================================================
+         11. FIXED-STEP SIMULATION UPDATE
+         ========================================================================= */
+      function updateMatch(dt) {
+        if (!match) return;
+
+        // Decay screen flashes, shakes, hoop animations
+        match.screenShake = Math.max(0, match.screenShake - dt * 42);
+        match.flashAlpha = Math.max(0, match.flashAlpha - dt * 1.4);
+        match.crowdExcitement = Math.max(0.25, match.crowdExcitement - dt * 0.35);
+
+        [LEFT_HOOP, RIGHT_HOOP].forEach((h) => {
+          h.shake = Math.max(0, h.shake - dt * 4.5);
+          h.netWave = Math.max(0, h.netWave - dt * 2.2);
+        });
+
+        // Update floating popups
+        for (let i = match.popups.length - 1; i >= 0; i--) {
+          const p = match.popups[i];
+          p.y += p.vy * dt;
+          p.vy *= 0.94;
+          p.life -= dt;
+          if (p.life <= 0) match.popups.splice(i, 1);
+        }
+
+        // Update particles
+        for (let i = match.particles.length - 1; i >= 0; i--) {
+          const pt = match.particles[i];
+          pt.x += pt.vx * dt;
+          pt.y += pt.vy * dt;
+          pt.vy += 520 * dt;
+          pt.life -= dt;
+          if (pt.life <= 0) match.particles.splice(i, 1);
+        }
+
+        // Inbound pause countdown
+        if (match.inboundTimer > 0) {
+          match.inboundTimer -= dt;
+          updateBallPhysics(dt);
+          if (match.inboundTimer <= 0) {
+            executeInbound();
+          }
+          return;
+        }
+
+        // Match Clock & Shot Clock
+        if (!match.overtime) {
+          match.timeLeft -= dt;
+          if (match.timeLeft <= 0) {
+            match.timeLeft = 0;
+            endMatch();
+            return;
+          }
+        }
+
+        if (match.ball.owner !== null) {
+          match.shotClock -= dt;
+          if (match.shotClock <= 0) {
+            // Shot clock violation -> turnover
+            const violatorIdx = match.ball.owner;
+            sfx.playWhistle();
+            spawnPopup(W / 2, 270, 'SHOT CLOCK VIOLATION!', '#f43f5e', 1.15);
+            match.inboundTo = 1 - violatorIdx;
+            match.inboundTimer = 0.85;
+            match.ball.owner = null;
+            return;
+          }
+        }
+
+        // Update both players
+        match.players.forEach((p) => {
+          // Cooldowns & timers
+          p.dashTimer = Math.max(0, p.dashTimer - dt);
+          p.dashCooldown = Math.max(0, p.dashCooldown - dt);
+          p.stunTimer = Math.max(0, p.stunTimer - dt);
+          p.stealTimer = Math.max(0, p.stealTimer - dt);
+          p.stealCooldown = Math.max(0, p.stealCooldown - dt);
+          p.blockTimer = Math.max(0, p.blockTimer - dt);
+          p.blockCooldown = Math.max(0, p.blockCooldown - dt);
+          p.shotAnimTimer = Math.max(0, p.shotAnimTimer - dt);
+          p.superActiveTimer = Math.max(0, p.superActiveTimer - dt);
+          p.rimHangTimer = Math.max(0, p.rimHangTimer - dt);
+
+          // Passive trickle of Supershot gauge
+          addSuperMeter(p, dt * 1.45);
+
+          // Afterimage decay
+          for (let i = p.afterimages.length - 1; i >= 0; i--) {
+            p.afterimages[i].alpha -= dt * 4.5;
+            if (p.afterimages[i].alpha <= 0) p.afterimages.splice(i, 1);
+          }
+
+          // Active Dunk Flight Trajectory
+          if (p.dunking) {
+            const hoop = p.dunkTargetHoop;
+            const dunkSpeed = p.dunkIsSuper ? 2.45 : 2.85;
+            p.dunkProgress += dt * dunkSpeed;
+            const t = Math.min(1, p.dunkProgress);
+            const targetX = hoop.rimX + (p.index === 0 ? -16 : 16);
+            const targetY = hoop.rimY + 55;
+
+            p.x = p.dunkStartX + (targetX - p.dunkStartX) * t;
+            const arcLift = Math.sin(t * Math.PI) * (p.dunkIsSuper ? 140 : 85);
+            p.y = p.dunkStartY + (targetY - p.dunkStartY) * t - arcLift;
+            p.grounded = false;
+
+            if (p.dunkIsSuper && Math.random() < 0.75) {
+              spawnParticles(p.x, p.y - 50, p.team.trailColors, 2, 120);
+            }
+
+            if (t >= 1) {
+              // SLAM IT HOME!
+              p.dunking = false;
+              p.rimHangTimer = 0.26;
+              p.vx = 0;
+              p.vy = 40;
+              match.ball.x = hoop.rimX;
+              match.ball.y = hoop.rimY + 8;
+              registerBasket(p.index, p.dunkPoints, true, false, p.dunkIsSuper);
+            }
+            return;
+          }
+
+          // Rim hang brief pause
+          if (p.rimHangTimer > 0) {
+            return;
+          }
+
+          // Human Input or CPU AI
+          if (p.isCPU) {
+            updateCPU(p, dt);
+          } else if (p.stunTimer <= 0) {
+            const inp = getPlayerInputs(p.index);
+            const speed = 370;
+
+            // Supershot trigger
+            if (inp.superDown && p.superMeter >= 100) {
+              activateSupershot(p);
+              if (p.dunking) return;
+            }
+
+            // Horizontal movement (unless currently in a burst dash)
+            if (p.dashTimer <= 0) {
+              if (inp.left && !inp.right) {
+                p.vx = -speed;
+                if (!p.chargingShot) p.facing = -1;
+              } else if (inp.right && !inp.left) {
+                p.vx = speed;
+                if (!p.chargingShot) p.facing = 1;
+              } else {
+                p.vx *= 0.72;
+                if (Math.abs(p.vx) < 8) p.vx = 0;
+              }
+            }
+
+            // Dash / Crossover
+            if (inp.dashDown && p.dashCooldown <= 0 && !p.chargingShot) {
+              const dashDir = inp.left ? -1 : (inp.right ? 1 : p.facing);
+              p.facing = dashDir;
+              p.vx = dashDir * 720;
+              p.dashTimer = 0.21;
+              p.dashCooldown = 1.1;
+              sfx.playSqueak();
+            }
+
+            // Jump
+            if (inp.jumpDown && p.grounded && !p.chargingShot) {
+              p.vy = -820;
+              p.grounded = false;
+            }
+
+            // Offense vs Defense Action Key (Shoot / Dunk / Steal / Block)
+            const hasBall = match.ball.owner === p.index;
+            if (hasBall) {
+              if (inp.shootDown) {
+                if (canAttemptDunk(p)) {
+                  startDunk(p, false);
+                  return;
+                } else if (!p.chargingShot) {
+                  beginShotCharge(p);
+                }
+              }
+              if (p.chargingShot && inp.shootUp) {
+                releaseJumpShot(p, false, false);
+              }
+            } else {
+              // Cancel shot charge if ball was stripped
+              p.chargingShot = false;
+              if (inp.shootDown) {
+                if (p.grounded) {
+                  attemptSteal(p);
+                } else {
+                  attemptBlock(p);
+                }
+              }
+            }
+          } else {
+            p.vx *= 0.85;
+          }
+
+          // Advance Shot Meter Charge
+          if (p.chargingShot) {
+            p.shotCharge += dt * 1.48;
+            if (p.shotCharge >= 1.0) {
+              p.shotCharge = 1.0;
+              releaseJumpShot(p, false, false);
+            }
+          }
+
+          // Record dash afterimages
+          if (p.dashTimer > 0) {
+            p.afterimages.push({ x: p.x, y: p.y, facing: p.facing, alpha: 0.55 });
+          }
+
+          // Integrate Player Velocity & Gravity
+          p.x += p.vx * dt;
+          if (!p.grounded) {
+            p.vy += GRAVITY * dt;
+            p.y += p.vy * dt;
+            if (p.y >= FLOOR_Y) {
+              p.y = FLOOR_Y;
+              p.vy = 0;
+              p.grounded = true;
+            }
+          }
+
+          // Court horizontal boundaries
+          p.x = Math.max(92, Math.min(W - 92, p.x));
+
+          // Animation cycles (run & dribble)
+          if (Math.abs(p.vx) > 25 && p.grounded) {
+            p.runCycle += dt * 15;
+          } else {
+            p.runCycle = 0;
+          }
+
+          if (match.ball.owner === p.index && !p.chargingShot && p.grounded) {
+            const prevPhase = p.dribblePhase;
+            p.dribblePhase += dt * (Math.abs(p.vx) > 30 ? 11.5 : 8.5);
+            // Trigger subtle dribble bounce sound at bottom of cycle
+            if (Math.sin(prevPhase) >= 0 && Math.sin(p.dribblePhase) < 0) {
+              sfx.playDribble();
+            }
+          }
+        });
+
+        updateBallPhysics(dt);
+      }
+
+      function updateBallPhysics(dt) {
+        const ball = match.ball;
+        ball.pickupCooldown = Math.max(0, ball.pickupCooldown - dt);
+
+        // 1. Ball held by a player
+        if (ball.owner !== null) {
+          const p = match.players[ball.owner];
+          ball.inFlight = false;
+          ball.isSupershot = false;
+          ball.trail = [];
+
+          if (p.dunking) {
+            ball.x = p.x + p.facing * 20;
+            ball.y = p.y - 98;
+          } else if (p.chargingShot) {
+            ball.x = p.x + p.facing * 16;
+            ball.y = p.y - 92;
+          } else {
+            // Dribble bounce between hand and floor
+            const bounce = Math.abs(Math.sin(p.dribblePhase));
+            const handX = p.x + p.facing * 28;
+            const handY = p.y - 44;
+            const floorHitY = FLOOR_Y - BALL_RADIUS;
+            ball.x = handX;
+            ball.y = p.grounded ? (handY + (floorHitY - handY) * (1 - bounce)) : (p.y - 48);
+            ball.angle += p.facing * dt * 8;
+          }
+          return;
+        }
+
+        // 2. Free / Airborne Ball Physics
+        const prevX = ball.x;
+        const prevY = ball.y;
+
+        // Supershots fly faster and ignore drag so they never get stuck
+        const gravScale = ball.isSupershot ? 1.0 : 0.92;
+        ball.vy += GRAVITY * gravScale * dt;
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        ball.angle += ball.spin * dt;
+
+        // Trail for green shots & supershots
+        if (ball.isGreenRelease || ball.isSupershot) {
+          ball.trail.push({ x: ball.x, y: ball.y, alpha: 1.0 });
+          if (ball.trail.length > 16) ball.trail.shift();
+          if (ball.isSupershot && Math.random() < 0.7) {
+            spawnParticles(ball.x, ball.y, ball.superTrailColors || ['#f97316', '#fde047'], 1, 90);
+          }
+        }
+        ball.trail.forEach((tr) => (tr.alpha -= dt * 3.2));
+
+        // Floor Bounce
+        if (ball.y + BALL_RADIUS >= FLOOR_Y) {
+          ball.y = FLOOR_Y - BALL_RADIUS;
+          if (Math.abs(ball.vy) > 95) {
+            sfx.playDribble();
+          }
+          ball.vy = -ball.vy * 0.74;
+          ball.vx *= 0.88;
+          ball.spin = ball.vx * 0.03;
+          ball.inFlight = false;
+          ball.isGreenRelease = false;
+          ball.isSupershot = false;
+        }
+
+        // Arena Side Walls & Ceiling
+        if (ball.x - BALL_RADIUS < 70) {
+          ball.x = 70 + BALL_RADIUS;
+          ball.vx = Math.abs(ball.vx) * 0.75;
+        } else if (ball.x + BALL_RADIUS > W - 70) {
+          ball.x = W - 70 - BALL_RADIUS;
+          ball.vx = -Math.abs(ball.vx) * 0.75;
+        }
+        if (ball.y - BALL_RADIUS < 65) {
+          ball.y = 65 + BALL_RADIUS;
+          ball.vy = Math.abs(ball.vy) * 0.6;
+        }
+
+        // Backboard & Rim Collisions (Skip rim lip obstruction on active Supershots for guaranteed cinematic swish!)
+        if (!ball.isSupershot) {
+          // Left Backboard
+          if (
+            ball.x - BALL_RADIUS < LEFT_HOOP.backboardX &&
+            prevX - BALL_RADIUS >= LEFT_HOOP.backboardX - 18 &&
+            ball.y > LEFT_HOOP.backboardTop &&
+            ball.y < LEFT_HOOP.backboardBottom
+          ) {
+            ball.x = LEFT_HOOP.backboardX + BALL_RADIUS;
+            ball.vx = Math.abs(ball.vx) * 0.68;
+            ball.touchedRim = true;
+            sfx.playRimClank();
+          }
+
+          // Right Backboard
+          if (
+            ball.x + BALL_RADIUS > RIGHT_HOOP.backboardX &&
+            prevX + BALL_RADIUS <= RIGHT_HOOP.backboardX + 18 &&
+            ball.y > RIGHT_HOOP.backboardTop &&
+            ball.y < RIGHT_HOOP.backboardBottom
+          ) {
+            ball.x = RIGHT_HOOP.backboardX - BALL_RADIUS;
+            ball.vx = -Math.abs(ball.vx) * 0.68;
+            ball.touchedRim = true;
+            sfx.playRimClank();
+          }
+
+          // Rim Lip Circle Collisions
+          [LEFT_HOOP, RIGHT_HOOP].forEach((hoop) => {
+            const lips = [
+              { x: hoop.rimX - hoop.rimRadius, y: hoop.rimY },
+              { x: hoop.rimX + hoop.rimRadius, y: hoop.rimY }
+            ];
+            lips.forEach((lip) => {
+              const dx = ball.x - lip.x;
+              const dy = ball.y - lip.y;
+              const dist = Math.hypot(dx, dy);
+              const minDist = BALL_RADIUS + 5;
+              if (dist < minDist && dist > 0.001) {
+                const nx = dx / dist;
+                const ny = dy / dist;
+                ball.x = lip.x + nx * minDist;
+                ball.y = lip.y + ny * minDist;
+
+                const dot = ball.vx * nx + ball.vy * ny;
+                if (dot < 0) {
+                  ball.vx = (ball.vx - 2 * dot * nx) * 0.68;
+                  ball.vy = (ball.vy - 2 * dot * ny) * 0.68;
+                  ball.touchedRim = true;
+                  hoop.shake = 0.65;
+                  sfx.playRimClank();
+                }
+              }
+            });
+          });
+        }
+
+        // Basket Score Detection (ball crossing rimY downward inside rim opening)
+        if (match.inboundTimer <= 0 && ball.vy > 0 && prevY <= LEFT_HOOP.rimY && ball.y >= LEFT_HOOP.rimY) {
+          // Check Left Hoop (scored by Player 1 / index 1)
+          if (Math.abs(ball.x - LEFT_HOOP.rimX) < LEFT_HOOP.rimRadius - 4) {
+            const pts = ball.lastShooter === 1 ? ball.shotPoints : 2;
+            const swish = !ball.touchedRim;
+            registerBasket(1, pts, false, swish, ball.isSupershot);
+            return;
+          }
+          // Check Right Hoop (scored by Player 0 / index 0)
+          if (Math.abs(ball.x - RIGHT_HOOP.rimX) < RIGHT_HOOP.rimRadius - 4) {
+            const pts = ball.lastShooter === 0 ? ball.shotPoints : 2;
+            const swish = !ball.touchedRim;
+            registerBasket(0, pts, false, swish, ball.isSupershot);
+            return;
+          }
+        }
+
+        // Rebound / Loose Ball Pickup by Players
+        if (match.inboundTimer <= 0 && ball.pickupCooldown <= 0 && !ball.isSupershot) {
+          for (let i = 0; i < match.players.length; i++) {
+            const p = match.players[i];
+            if (p.stunTimer > 0 || p.dunking) continue;
+            // Don't let shooter immediately grab their own rising shot
+            if (ball.inFlight && ball.vy < 0 && ball.lastShooter === p.index) continue;
+
+            const bodyCenterY = p.y - 54;
+            const dist = Math.hypot(ball.x - p.x, ball.y - bodyCenterY);
+            if (dist < 56) {
+              ball.owner = p.index;
+              ball.inFlight = false;
+              match.shotClock = SHOT_CLOCK_DURATION;
+              sfx.playDribble();
+              if (ball.lastShooter !== null && ball.lastShooter !== p.index) {
+                spawnPopup(p.x, p.y - 120, 'REBOUND!', '#fbbf24', 0.95);
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      /* =========================================================================
+         12. HIGH-DPI CANVAS RENDERER (ARENA, CROWD, SCOREBOARD, PLAYERS, FX)
+         ========================================================================= */
+      function resizeCanvas() {
+        const container = document.getElementById('stage-container');
+        const rect = container.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      function renderFrame(timestamp) {
+        ctx.save();
+        const scaleX = canvas.width / W;
+        const scaleY = canvas.height / H;
+        ctx.scale(scaleX, scaleY);
+
+        // Apply screen shake offset if active
+        if (match && match.screenShake > 0) {
+          const sx = (Math.random() - 0.5) * match.screenShake;
+          const sy = (Math.random() - 0.5) * match.screenShake;
+          ctx.translate(sx, sy);
+        }
+
+        const p1Team = match ? match.players[0].team : TEAMS[appState.p1TeamIdx];
+        const p2Team = match ? match.players[1].team : TEAMS[appState.p2TeamIdx];
+
+        drawArenaAndCrowd(timestamp, p1Team, p2Team);
+        drawCourtFloor(p1Team, p2Team);
+
+        // Draw backboards & back half of rims
+        drawHoopBack(LEFT_HOOP, p1Team, true);
+        drawHoopBack(RIGHT_HOOP, p2Team, false);
+
+        if (match) {
+          // Draw players
+          match.players.forEach((p) => drawSuperstar(p, timestamp));
+
+          // Draw basketball & fire trails
+          drawBasketball(match.ball);
+
+          // Draw front rim & dynamic swishing nets over ball
+          drawHoopFront(LEFT_HOOP);
+          drawHoopFront(RIGHT_HOOP);
+
+          // Draw curved Shot Meter near shooter
+          match.players.forEach((p) => {
+            if (p.chargingShot) drawShotMeter(p);
+          });
+
+          // Draw particles & arcade callout popups
+          drawParticlesAndPopups();
+
+          // Draw overhead digital scoreboard HUD
+          drawScoreboardHUD();
+
+          // Screen flash on Supershot / Dunk
+          if (match.flashAlpha > 0) {
+            ctx.fillStyle = match.flashColor;
+            ctx.globalAlpha = match.flashAlpha;
+            ctx.fillRect(0, 0, W, H);
+            ctx.globalAlpha = 1;
+          }
+
+          // Confetti on Game Over
+          if (match.confetti.length > 0) {
+            updateAndDrawConfetti();
+          }
+        } else {
+          drawHoopFront(LEFT_HOOP);
+          drawHoopFront(RIGHT_HOOP);
+        }
+
+        ctx.restore();
+      }
+
+      function drawArenaAndCrowd(ts, p1Team, p2Team) {
+        // Upper Stadium Background
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
+        bgGrad.addColorStop(0, '#070b19');
+        bgGrad.addColorStop(0.55, '#121b38');
+        bgGrad.addColorStop(1, '#1d2952');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, FLOOR_Y);
+
+        // Sweeping Arena Spotlights
+        const t = ts * 0.0008;
+        const beams = [
+          { x: 260, angle: Math.sin(t) * 0.22, color: p1Team.primary },
+          { x: 640, angle: Math.cos(t * 0.9) * 0.16, color: '#38bdf8' },
+          { x: 1020, angle: -Math.sin(t * 1.1) * 0.22, color: p2Team.primary }
+        ];
+        beams.forEach((b) => {
+          ctx.save();
+          ctx.translate(b.x, 0);
+          ctx.rotate(b.angle);
+          const beamGrad = ctx.createLinearGradient(0, 0, 0, 560);
+          beamGrad.addColorStop(0, 'rgba(255,255,255,0.14)');
+          beamGrad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = beamGrad;
+          ctx.beginPath();
+          ctx.moveTo(-30, 0);
+          ctx.lineTo(30, 0);
+          ctx.lineTo(220, 560);
+          ctx.lineTo(-220, 560);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        });
+
+        // Stadium Bleachers / Tiered Stands
+        ctx.fillStyle = '#0c1226';
+        ctx.fillRect(0, 290, W, 240);
+        ctx.fillStyle = '#151f3d';
+        ctx.fillRect(0, 355, W, 175);
+
+        // Animated Spectator Silhouettes
+        const excitement = match ? match.crowdExcitement : 0.35;
+        for (let row = 0; row < 3; row++) {
+          const baseY = 345 + row * 48;
+          ctx.fillStyle = row === 0 ? '#1b2647' : (row === 1 ? '#233159' : '#2c3d6e');
+          for (let x = 20; x < W; x += 34) {
+            const wave = Math.sin(ts * 0.006 + x * 0.04 + row) * (4 + excitement * 11);
+            const sy = baseY - Math.abs(wave);
+            // Head & shoulders silhouette
+            ctx.beginPath();
+            ctx.arc(x, sy - 14, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.roundRect(x - 13, sy - 4, 26, 28, 8);
+            ctx.fill();
+
+            // Cheering raised arms during high excitement
+            if (excitement > 0.65 && (x + row) % 3 === 0) {
+              ctx.strokeStyle = ctx.fillStyle;
+              ctx.lineWidth = 4;
+              ctx.beginPath();
+              ctx.moveTo(x - 10, sy);
+              ctx.lineTo(x - 18, sy - 18);
+              ctx.moveTo(x + 10, sy);
+              ctx.lineTo(x + 18, sy - 18);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Courtside LED Sponsor Ribbon Wall
+        const ledGrad = ctx.createLinearGradient(0, 505, W, 505);
+        ledGrad.addColorStop(0, p1Team.primary);
+        ledGrad.addColorStop(0.5, '#0f172a');
+        ledGrad.addColorStop(1, p2Team.primary);
+        ctx.fillStyle = ledGrad;
+        ctx.fillRect(0, 505, W, 38);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 505, W, 38);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.82)';
+        ctx.font = '700 15px "Bungee", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('★  HOOP STARS ARENA  ★  SWISH FOR EXTRA METER  ★  ARCADE SHOWDOWN  ★', W / 2, 530);
+      }
+
+      function drawCourtFloor(p1Team, p2Team) {
+        const apronTop = 543;
+        const floorBottom = H;
+
+        // Outer Court Apron (Team tinted)
+        const apronGrad = ctx.createLinearGradient(0, apronTop, W, apronTop);
+        apronGrad.addColorStop(0, p1Team.primary);
+        apronGrad.addColorStop(0.5, '#1e293b');
+        apronGrad.addColorStop(1, p2Team.primary);
+        ctx.fillStyle = apronGrad;
+        ctx.fillRect(0, apronTop, W, floorBottom - apronTop);
+
+        // Polished Maple Hardwood Playing Surface
+        const woodGrad = ctx.createLinearGradient(0, apronTop + 12, 0, floorBottom - 16);
+        woodGrad.addColorStop(0, '#d99b52');
+        woodGrad.addColorStop(0.45, '#e8b36b');
+        woodGrad.addColorStop(1, '#c4813b');
+        ctx.fillStyle = woodGrad;
+        ctx.fillRect(65, apronTop + 12, W - 130, floorBottom - apronTop - 28);
+
+        // Hardwood Plank Lines
+        ctx.strokeStyle = 'rgba(120, 62, 16, 0.22)';
+        ctx.lineWidth = 1.5;
+        for (let py = apronTop + 26; py < floorBottom - 18; py += 16) {
+          ctx.beginPath();
+          ctx.moveTo(65, py);
+          ctx.lineTo(W - 65, py);
+          ctx.stroke();
+        }
+
+        // Painted Keys (Left & Right)
+        ctx.fillStyle = p1Team.primary;
+        ctx.globalAlpha = 0.72;
+        ctx.fillRect(72, apronTop + 34, 210, 74);
+        ctx.fillStyle = p2Team.primary;
+        ctx.fillRect(W - 282, apronTop + 34, 210, 74);
+        ctx.globalAlpha = 1;
+
+        // Crisp White Court Markings
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(72, apronTop + 14, W - 144, floorBottom - apronTop - 32);
+
+        // Half-court line & Center Logo Circle
+        ctx.beginPath();
+        ctx.moveTo(W / 2, apronTop + 14);
+        ctx.lineTo(W / 2, floorBottom - 18);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(W / 2, FLOOR_Y + 6, 68, 26, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        ctx.fill();
+        ctx.stroke();
+
+        // 3-Point Arcs (Perspective Ellipses matching LEFT_HOOP.threePtX and RIGHT_HOOP.threePtX)
+        ctx.beginPath();
+        ctx.ellipse(158, FLOOR_Y + 6, 257, 46, 0, -Math.PI * 0.48, Math.PI * 0.48);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(1122, FLOOR_Y + 6, 257, 46, 0, Math.PI * 0.52, Math.PI * 1.48);
+        ctx.stroke();
+
+        // Glossy Arena Spotlight Reflection across Hardwood
+        const sheen = ctx.createLinearGradient(0, apronTop + 14, 0, floorBottom - 20);
+        sheen.addColorStop(0, 'rgba(255,255,255,0.18)');
+        sheen.addColorStop(0.5, 'rgba(255,255,255,0.03)');
+        sheen.addColorStop(1, 'rgba(0,0,0,0.14)');
+        ctx.fillStyle = sheen;
+        ctx.fillRect(72, apronTop + 14, W - 144, floorBottom - apronTop - 32);
+      }
+
+      function drawHoopBack(hoop, team, isLeft) {
+        const shakeX = (Math.random() - 0.5) * hoop.shake * 8;
+        const shakeY = (Math.random() - 0.5) * hoop.shake * 8;
+
+        ctx.save();
+        ctx.translate(shakeX, shakeY);
+
+        // Stanchion Support Pole
+        const poleX = isLeft ? 54 : W - 54;
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(poleX - 12, 275, 24, FLOOR_Y - 275);
+        ctx.fillStyle = team.primary;
+        ctx.fillRect(poleX - 15, 420, 30, FLOOR_Y - 420);
+
+        // Extension Arm to Backboard
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(poleX, 285);
+        ctx.lineTo(hoop.backboardX, 285);
+        ctx.stroke();
+
+        // Tempered Glass Backboard
+        const bbX = isLeft ? hoop.backboardX - 8 : hoop.backboardX;
+        ctx.fillStyle = 'rgba(226, 232, 240, 0.25)';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.roundRect(bbX, hoop.backboardTop, 8, hoop.backboardBottom - hoop.backboardTop, 3);
+        ctx.fill();
+        ctx.stroke();
+
+        // Shooter's Square Accent
+        ctx.fillStyle = team.secondary;
+        ctx.fillRect(bbX, hoop.rimY - 38, 8, 36);
+
+        // Back half of orange rim
+        ctx.strokeStyle = '#c2410c';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.ellipse(hoop.rimX, hoop.rimY, hoop.rimRadius, 6, 0, Math.PI, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawHoopFront(hoop) {
+        const shakeX = (Math.random() - 0.5) * hoop.shake * 8;
+        const shakeY = (Math.random() - 0.5) * hoop.shake * 8;
+
+        ctx.save();
+        ctx.translate(shakeX, shakeY);
+
+        // Dynamic Nylon Net Mesh
+        const netTopY = hoop.rimY + 3;
+        const netBottomY = hoop.rimY + 46;
+        const topSpread = hoop.rimRadius - 3;
+        const waveExpand = Math.sin(hoop.netWave * Math.PI) * 14;
+        const bottomSpread = hoop.rimRadius * 0.56 + waveExpand;
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.lineWidth = 2.2;
+
+        const strands = 6;
+        for (let i = 0; i <= strands; i++) {
+          const frac = i / strands;
+          const tx = hoop.rimX - topSpread + frac * topSpread * 2;
+          const bx = hoop.rimX - bottomSpread + frac * bottomSpread * 2;
+          ctx.beginPath();
+          ctx.moveTo(tx, netTopY);
+          ctx.quadraticCurveTo((tx + bx) * 0.5, (netTopY + netBottomY) * 0.5 + waveExpand * 0.3, bx, netBottomY);
+          ctx.stroke();
+        }
+        // Horizontal net cross-loops
+        for (let row = 1; row <= 3; row++) {
+          const rFrac = row / 3.5;
+          const y = netTopY + (netBottomY - netTopY) * rFrac;
+          const w = topSpread + (bottomSpread - topSpread) * rFrac;
+          ctx.beginPath();
+          ctx.moveTo(hoop.rimX - w, y);
+          ctx.lineTo(hoop.rimX + w, y);
+          ctx.stroke();
+        }
+
+        // Front Bright Orange Rim Lip
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 6.5;
+        ctx.beginPath();
+        ctx.ellipse(hoop.rimX, hoop.rimY, hoop.rimRadius, 6, 0, 0, Math.PI);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawSuperstar(p, ts) {
+        const team = p.team;
+
+        // 1. Dash Afterimages
+        p.afterimages.forEach((img) => {
+          ctx.save();
+          ctx.globalAlpha = img.alpha * 0.45;
+          ctx.fillStyle = team.secondary;
+          ctx.beginPath();
+          ctx.ellipse(img.x, img.y - 52, 26, 48, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        // 2. Ground Shadow
+        const heightAboveFloor = Math.max(0, FLOOR_Y - p.y);
+        const shadowScale = Math.max(0.35, 1 - heightAboveFloor / 420);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.36)';
+        ctx.beginPath();
+        ctx.ellipse(p.x, FLOOR_Y + 4, 34 * shadowScale, 9 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. 2PT / 3PT Live Shot Range Indicator under Ball Handler
+        if (match && match.ball.owner === p.index && !p.dunking) {
+          const isThree = isBehindThreePointLine(p.index, p.x);
+          ctx.save();
+          ctx.font = '700 12px "Bungee", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = isThree ? '#38bdf8' : '#fde047';
+          ctx.fillText(isThree ? '3PT RANGE' : '2PT', p.x, FLOOR_Y + 23);
+          ctx.restore();
+        }
+
+        // 4. Supershot Ready Aura Ring at Feet
+        if (p.superMeter >= 100) {
+          const pulse = 1 + Math.sin(ts * 0.012) * 0.14;
+          ctx.save();
+          ctx.strokeStyle = team.secondary;
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.ellipse(p.x, FLOOR_Y + 2, 42 * pulse, 12 * pulse, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // 5. Player Caricature Body Transform
+        ctx.save();
+        ctx.translate(p.x, p.y);
+
+        // Stunned wobble effect
+        if (p.stunTimer > 0) {
+          ctx.rotate(Math.sin(ts * 0.04) * 0.16);
+        } else if (p.dunking) {
+          ctx.rotate(p.facing * 0.28);
+        } else if (p.dashTimer > 0) {
+          ctx.rotate(p.facing * 0.18);
+        }
+
+        const dir = p.facing;
+        const legSwing = p.grounded ? Math.sin(p.runCycle) * 14 : 12;
+
+        // --- LEGS & SNEAKERS ---
+        ctx.lineCap = 'round';
+        // Back Leg
+        ctx.strokeStyle = team.skin;
+        ctx.lineWidth = 9;
+        ctx.beginPath();
+        ctx.moveTo(-6 * dir, -34);
+        ctx.lineTo((-8 - legSwing * 0.6) * dir, -10);
+        ctx.stroke();
+        drawSneaker((-8 - legSwing * 0.6) * dir, -6, dir, team);
+
+        // Front Leg
+        ctx.strokeStyle = team.skin;
+        ctx.beginPath();
+        ctx.moveTo(6 * dir, -34);
+        ctx.lineTo((8 + legSwing * 0.6) * dir, -10);
+        ctx.stroke();
+        drawSneaker((8 + legSwing * 0.6) * dir, -6, dir, team);
+
+        // --- BASKETBALL SHORTS ---
+        ctx.fillStyle = team.primary;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.roundRect(-17, -46, 34, 20, 5);
+        ctx.fill();
+        ctx.stroke();
+
+        // Shorts Trim Stripe
+        ctx.fillStyle = team.secondary;
+        ctx.fillRect(-15, -30, 30, 4);
+
+        // --- JERSEY TORSO ---
+        ctx.fillStyle = team.primary;
+        ctx.beginPath();
+        ctx.roundRect(-18, -78, 36, 35, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        // Jersey Neck & Armhole Trim
+        ctx.strokeStyle = team.secondary;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, -78, 9, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+
+        // Jersey Number
+        ctx.fillStyle = team.textColor;
+        ctx.font = '700 15px "Bungee", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(team.number, 0, -54);
+
+        // --- DYNAMIC ARMS ---
+        ctx.strokeStyle = team.skin;
+        ctx.lineWidth = 8.5;
+        if (p.dunking) {
+          // Raised tomahawk dunk arm
+          ctx.beginPath();
+          ctx.moveTo(8 * dir, -72);
+          ctx.lineTo(22 * dir, -104);
+          ctx.stroke();
+        } else if (p.chargingShot || p.shotAnimTimer > 0) {
+          // Overhead shooting arms
+          ctx.beginPath();
+          ctx.moveTo(6 * dir, -72);
+          ctx.lineTo(14 * dir, -96);
+          ctx.stroke();
+        } else if (p.blockTimer > 0) {
+          // High vertical block swat
+          ctx.beginPath();
+          ctx.moveTo(6 * dir, -72);
+          ctx.lineTo(12 * dir, -112);
+          ctx.stroke();
+        } else if (p.stealTimer > 0) {
+          // Forward steal lunge reach
+          ctx.beginPath();
+          ctx.moveTo(8 * dir, -68);
+          ctx.lineTo(38 * dir, -62);
+          ctx.stroke();
+        } else if (match && match.ball.owner === p.index) {
+          // Dribbling arm pumping
+          const pump = Math.abs(Math.sin(p.dribblePhase)) * 10;
+          ctx.beginPath();
+          ctx.moveTo(10 * dir, -70);
+          ctx.lineTo(24 * dir, -48 + pump);
+          ctx.stroke();
+        } else {
+          // Athletic defensive ready arms
+          ctx.beginPath();
+          ctx.moveTo(10 * dir, -70);
+          ctx.lineTo(24 * dir, -56);
+          ctx.stroke();
+        }
+
+        // --- OVERSIZED CARICATURE HEAD ---
+        const headY = -104;
+        const headR = 29;
+
+        // Hair (Behind Head for Afro/Wavy)
+        if (team.hairStyle === 'afro') {
+          ctx.fillStyle = team.hairColor;
+          ctx.beginPath();
+          ctx.arc(-2 * dir, headY - 6, 34, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Head Base
+        ctx.fillStyle = team.skin;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, headY, headR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Hair Styles (Top)
+        ctx.fillStyle = team.hairColor;
+        if (team.hairStyle === 'fade_beard' || team.hairStyle === 'waves') {
+          ctx.beginPath();
+          ctx.arc(0, headY - 4, headR - 1, Math.PI * 1.05, Math.PI * 1.95);
+          ctx.fill();
+        } else if (team.hairStyle === 'spiky') {
+          for (let s = -2; s <= 2; s++) {
+            ctx.beginPath();
+            ctx.moveTo(s * 9 - 6, headY - 22);
+            ctx.lineTo(s * 9, headY - 38);
+            ctx.lineTo(s * 9 + 6, headY - 22);
+            ctx.fill();
+          }
+        } else if (team.hairStyle === 'mohawk') {
+          ctx.beginPath();
+          ctx.roundRect(-7, headY - 38, 14, 18, 5);
+          ctx.fill();
+        } else if (team.hairStyle === 'curly_fade' || team.hairStyle === 'wavy_euro') {
+          for (let c = -18; c <= 18; c += 9) {
+            ctx.beginPath();
+            ctx.arc(c, headY - 25, 8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Team Headband
+        ctx.fillStyle = team.headband;
+        ctx.fillRect(-headR + 1, headY - 14, (headR - 1) * 2, 7);
+
+        // Beard / Goatee
+        if (team.hairStyle === 'fade_beard') {
+          ctx.fillStyle = team.hairColor;
+          ctx.beginPath();
+          ctx.arc(2 * dir, headY + 6, 21, 0.1 * Math.PI, 0.9 * Math.PI);
+          ctx.fill();
+        }
+
+        // Expressive Eyes & Eyebrows
+        const eyeX = 11 * dir;
+        const eyeY = headY - 2;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(eyeX, eyeY, 6.5, 5.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.arc(eyeX + 2 * dir, eyeY, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Fierce Eyebrow
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(eyeX - 6 * dir, eyeY - 8);
+        ctx.lineTo(eyeX + 7 * dir, eyeY - 5);
+        ctx.stroke();
+
+        // Mouth Expression (Hype roar on dunk/supershot, determined grin otherwise)
+        if (p.dunking || p.superActiveTimer > 0) {
+          ctx.fillStyle = '#7f1d1d';
+          ctx.beginPath();
+          ctx.ellipse(12 * dir, headY + 12, 7, 6, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = '#090d16';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.arc(11 * dir, headY + 10, 6, 0.1 * Math.PI, 0.85 * Math.PI);
+          ctx.stroke();
+        }
+
+        // Stunned Stars spinning above head
+        if (p.stunTimer > 0) {
+          for (let s = 0; s < 3; s++) {
+            const ang = ts * 0.01 + (s * Math.PI * 2) / 3;
+            const sx = Math.cos(ang) * 24;
+            const sy = headY - 38 + Math.sin(ang) * 6;
+            ctx.fillStyle = '#fde047';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('★', sx, sy);
+          }
+        }
+
+        // Floating P1 / P2 / CPU Tag above Head
+        const tagText = p.index === 0 ? 'P1' : (p.isCPU ? 'CPU' : 'P2');
+        const tagColor = p.index === 0 ? '#38bdf8' : '#fb7185';
+        ctx.fillStyle = tagColor;
+        ctx.font = '700 12px "Bungee", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`▼ ${tagText}`, 0, headY - 40);
+
+        ctx.restore();
+      }
+
+      function drawSneaker(x, y, dir, team) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.fillStyle = team.secondary;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.roundRect(dir > 0 ? -7 : -13, -5, 20, 10, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // White Sole
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(dir > 0 ? -7 : -13, 3, 20, 3);
+        ctx.restore();
+      }
+
+      function drawBasketball(ball) {
+        // Fire / Energy Trail for Green Shots & Supershots
+        if (ball.trail && ball.trail.length > 1) {
+          ball.trail.forEach((tr, idx) => {
+            if (tr.alpha <= 0) return;
+            const r = BALL_RADIUS * (idx / ball.trail.length) * (ball.isSupershot ? 1.35 : 0.9);
+            ctx.save();
+            ctx.globalAlpha = tr.alpha * 0.55;
+            ctx.fillStyle = ball.isSupershot
+              ? (ball.superTrailColors ? ball.superTrailColors[idx % ball.superTrailColors.length] : '#f97316')
+              : '#22c55e';
+            ctx.beginPath();
+            ctx.arc(tr.x, tr.y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          });
+        }
+
+        ctx.save();
+        ctx.translate(ball.x, ball.y);
+        ctx.rotate(ball.angle);
+
+        // Glowing aura if Supershot
+        if (ball.isSupershot) {
+          ctx.shadowColor = '#f97316';
+          ctx.shadowBlur = 22;
+        }
+
+        // Orange Leather Sphere
+        const grad = ctx.createRadialGradient(-5, -5, 2, 0, 0, BALL_RADIUS);
+        grad.addColorStop(0, '#fb923c');
+        grad.addColorStop(0.65, '#ea580c');
+        grad.addColorStop(1, '#9a3412');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Basketball Seams
+        ctx.strokeStyle = '#1c1917';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-BALL_RADIUS, 0);
+        ctx.lineTo(BALL_RADIUS, 0);
+        ctx.moveTo(0, -BALL_RADIUS);
+        ctx.lineTo(0, BALL_RADIUS);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(-BALL_RADIUS * 0.65, 0, BALL_RADIUS * 0.72, -0.42 * Math.PI, 0.42 * Math.PI);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(BALL_RADIUS * 0.65, 0, BALL_RADIUS * 0.72, 0.58 * Math.PI, 1.42 * Math.PI);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawShotMeter(p) {
+        const meterX = p.x - p.facing * 42;
+        const meterY = p.y - 82;
+        const radius = 36;
+        const startAng = Math.PI * 0.68;
+        const endAng = Math.PI * 1.32;
+        const span = endAng - startAng;
+
+        ctx.save();
+        // Dark Track Background
+        ctx.strokeStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.lineWidth = 11;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(meterX, meterY, radius, startAng, endAng);
+        ctx.stroke();
+
+        // Green Sweet Spot Zone
+        const sweetStartAng = startAng + span * p.shotSweetStart;
+        const sweetEndAng = startAng + span * p.shotSweetEnd;
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 9;
+        ctx.beginPath();
+        ctx.arc(meterX, meterY, radius, sweetStartAng, sweetEndAng);
+        ctx.stroke();
+
+        // Current Charge Fill
+        const curAng = startAng + span * p.shotCharge;
+        const inGreen = p.shotCharge >= p.shotSweetStart && p.shotCharge <= p.shotSweetEnd;
+        ctx.strokeStyle = inGreen ? '#86efac' : '#fbbf24';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(meterX, meterY, radius, startAng, curAng);
+        ctx.stroke();
+
+        // Cursor Dot
+        const dotX = meterX + Math.cos(curAng) * radius;
+        const dotY = meterY + Math.sin(curAng) * radius;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawParticlesAndPopups() {
+        match.particles.forEach((pt) => {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+          ctx.fillStyle = pt.color;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        match.popups.forEach((pop) => {
+          const alpha = Math.min(1, (pop.life / pop.maxLife) * 1.6);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.translate(pop.x, pop.y);
+          ctx.scale(pop.scale, pop.scale);
+
+          ctx.font = '700 24px "Bungee", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = '#090d16';
+          ctx.strokeText(pop.text, 0, 0);
+          ctx.fillStyle = pop.color;
+          ctx.fillText(pop.text, 0, 0);
+          ctx.restore();
+        });
+      }
+
+      function drawScoreboardHUD() {
+        const p1 = match.players[0];
+        const p2 = match.players[1];
+
+        const boardW = 660;
+        const boardH = 88;
+        const bx = (W - boardW) / 2;
+        const by = 12;
+
+        ctx.save();
+        // Main Scoreboard Frame
+        ctx.fillStyle = 'rgba(10, 14, 28, 0.92)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, boardW, boardH, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        // Left Team Panel (Player 1)
+        ctx.fillStyle = p1.team.primary;
+        ctx.beginPath();
+        ctx.roundRect(bx + 8, by + 8, 225, 48, 10);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 15px "Bungee", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(p1.team.short, bx + 18, by + 30);
+
+        ctx.font = '700 11px "Chakra Petch", sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillText(p1.team.starName.toUpperCase(), bx + 18, by + 47);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 32px "Bungee", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(String(p1.score), bx + 222, by + 44);
+
+        // Right Team Panel (Player 2 / CPU)
+        ctx.fillStyle = p2.team.primary;
+        ctx.beginPath();
+        ctx.roundRect(bx + boardW - 233, by + 8, 225, 48, 10);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 15px "Bungee", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(p2.team.short, bx + boardW - 18, by + 30);
+
+        ctx.font = '700 11px "Chakra Petch", sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillText(p2.team.starName.toUpperCase(), bx + boardW - 18, by + 47);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 32px "Bungee", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(String(p2.score), bx + boardW - 222, by + 44);
+
+        // Center Game Clock & Shot Clock
+        ctx.textAlign = 'center';
+        if (match.overtime) {
+          ctx.fillStyle = '#f43f5e';
+          ctx.font = '700 18px "Bungee", sans-serif';
+          ctx.fillText('SUDDEN', W / 2, by + 29);
+          ctx.fillText('DEATH OT', W / 2, by + 49);
+        } else {
+          const secs = Math.ceil(match.timeLeft);
+          const mins = Math.floor(secs / 60);
+          const rem = secs % 60;
+          const timeStr = `${mins}:${rem < 10 ? '0' : ''}${rem}`;
+          ctx.fillStyle = secs <= 10 ? '#f43f5e' : '#fbbf24';
+          ctx.font = '700 28px "Bungee", sans-serif';
+          ctx.fillText(timeStr, W / 2, by + 37);
+
+          const sc = Math.ceil(match.shotClock);
+          ctx.fillStyle = sc <= 5 ? '#f43f5e' : '#94a3b8';
+          ctx.font = '700 12px "Chakra Petch", sans-serif';
+          ctx.fillText(`SHOT CLOCK: ${sc}s`, W / 2, by + 53);
+        }
+
+        // Supershot Gauges (Bottom Row of Scoreboard)
+        drawSuperGauge(bx + 10, by + 63, 222, 16, p1.superMeter, p1.team.secondary, 'P1 SUPERSHOT');
+        drawSuperGauge(bx + boardW - 232, by + 63, 222, 16, p2.superMeter, p2.team.secondary, 'P2 SUPERSHOT');
+
+        // Round / Mode Label
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '700 10px "Chakra Petch", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(match.roundLabel, W / 2, by + 75);
+
+        ctx.restore();
+      }
+
+      function drawSuperGauge(x, y, w, h, pct, color, label) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 6);
+        ctx.fill();
+
+        const fillW = Math.max(0, (pct / 100) * w);
+        if (fillW > 0) {
+          ctx.fillStyle = pct >= 100 ? '#fde047' : color;
+          ctx.beginPath();
+          ctx.roundRect(x, y, fillW, h, 6);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = pct >= 100 ? '#090d16' : '#ffffff';
+        ctx.font = '700 10px "Bungee", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(pct >= 100 ? '⚡ SUPERSHOT READY! ⚡' : `${label} ${Math.floor(pct)}%`, x + w / 2, y + 12);
+        ctx.restore();
+      }
+
+      function updateAndDrawConfetti() {
+        match.confetti.forEach((c) => {
+          c.x += c.vx * 0.016;
+          c.y += c.vy * 0.016;
+          c.rot += c.vrot * 0.016;
+          if (c.y > H + 20) c.y = -20;
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+          ctx.restore();
+        });
+      }
+
+      /* =========================================================================
+         13. MAIN ANIMATION LOOP
+         ========================================================================= */
+      let lastTimestamp = 0;
+
+      function gameLoop(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+        lastTimestamp = timestamp;
+
+        if (appState.screen === 'PLAYING' && match) {
+          updateMatch(dt);
+        }
+
+        renderFrame(timestamp);
+        clearEdgeInputs();
+        requestAnimationFrame(gameLoop);
+      }
+
+      /* =========================================================================
+         14. TOURNAMENT BRACKET & SETUP UI CONTROLLER
+         ========================================================================= */
+      class TournamentManager {
+        constructor(userTeamIdx) {
+          this.userTeamId = TEAMS[userTeamIdx].id;
+          this.roundNames = ['ROUND 1: QUARTERFINALS', 'ROUND 2: SEMIFINALS', 'ROUND 3: CHAMPIONSHIP FINALS'];
+          this.currentRound = 0;
+
+          // Build 8-team shuffled bracket with user in Slot 0
+          const others = TEAMS.map((t, idx) => idx).filter((idx) => idx !== userTeamIdx);
+          for (let i = others.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [others[i], others[j]] = [others[j], others[i]];
+          }
+
+          const seedIndices = [userTeamIdx, ...others];
+          this.qf = [
+            { a: seedIndices[0], b: seedIndices[1], winner: null },
+            { a: seedIndices[2], b: seedIndices[3], winner: null },
+            { a: seedIndices[4], b: seedIndices[5], winner: null },
+            { a: seedIndices[6], b: seedIndices[7], winner: null }
+          ];
+          this.sf = [
+            { a: null, b: null, winner: null },
+            { a: null, b: null, winner: null }
+          ];
+          this.finals = [{ a: null, b: null, winner: null }];
+        }
+
+        getNextOpponentIdx() {
+          if (this.currentRound === 0) return this.qf[0].b;
+          if (this.currentRound === 1) return this.sf[0].b;
+          return this.finals[0].b;
+        }
+
+        advanceWinner(winnerTeamId) {
+          const userIdx = TEAMS.findIndex((t) => t.id === winnerTeamId);
+          if (this.currentRound === 0) {
+            this.qf[0].winner = userIdx;
+            // Simulate other 3 quarterfinal matchups
+            for (let i = 1; i < 4; i++) {
+              this.qf[i].winner = Math.random() < 0.5 ? this.qf[i].a : this.qf[i].b;
+            }
+            this.sf[0].a = this.qf[0].winner;
+            this.sf[0].b = this.qf[1].winner;
+            this.sf[1].a = this.qf[2].winner;
+            this.sf[1].b = this.qf[3].winner;
+            this.currentRound = 1;
+          } else if (this.currentRound === 1) {
+            this.sf[0].winner = userIdx;
+            this.sf[1].winner = Math.random() < 0.5 ? this.sf[1].a : this.sf[1].b;
+            this.finals[0].a = this.sf[0].winner;
+            this.finals[0].b = this.sf[1].winner;
+            this.currentRound = 2;
+          } else {
+            this.finals[0].winner = userIdx;
+            this.currentRound = 3; // Champion!
+          }
+        }
+      }
+
+      function renderBracketUI() {
+        const t = appState.tournament;
+        if (!t) return;
+
+        const board = document.getElementById('bracket-board');
+        const statusEl = document.getElementById('bracket-status-text');
+        const playBtn = document.getElementById('btn-bracket-play');
+
+        if (t.currentRound >= 3) {
+          statusEl.textContent = '👑 TOURNAMENT CHAMPIONSHIP COMPLETE! 👑';
+          playBtn.textContent = 'NEW TOURNAMENT';
+        } else {
+          statusEl.textContent = t.roundNames[t.currentRound];
+          playBtn.textContent = `PLAY ${t.roundNames[t.currentRound].split(': ')[1]}`;
+        }
+
+        const renderMatchBox = (m, isActive) => {
+          const teamA = m.a !== null ? TEAMS[m.a] : null;
+          const teamB = m.b !== null ? TEAMS[m.b] : null;
+          return `
+            <div class="matchup-box ${isActive ? 'active-match' : ''}">
+              <div class="matchup-row ${m.winner !== null && m.winner === m.a ? 'winner' : ''}">
+                <span>${teamA ? `${teamA.short} - ${teamA.name}` : 'TBD'}</span>
+                <span>${m.winner !== null && m.winner === m.a ? '✔' : ''}</span>
+              </div>
+              <div class="matchup-row ${m.winner !== null && m.winner === m.b ? 'winner' : ''}">
+                <span>${teamB ? `${teamB.short} - ${teamB.name}` : 'TBD'}</span>
+                <span>${m.winner !== null && m.winner === m.b ? '✔' : ''}</span>
+              </div>
+            </div>
+          `;
+        };
+
+        board.innerHTML = `
+          <div class="bracket-round">
+            <div class="bracket-round-title">QUARTERFINALS</div>
+            ${t.qf.map((m, idx) => renderMatchBox(m, t.currentRound === 0 && idx === 0)).join('')}
+          </div>
+          <div class="bracket-round">
+            <div class="bracket-round-title">SEMIFINALS</div>
+            ${t.sf.map((m, idx) => renderMatchBox(m, t.currentRound === 1 && idx === 0)).join('')}
+          </div>
+          <div class="bracket-round">
+            <div class="bracket-round-title">FINALS</div>
+            ${t.finals.map((m) => renderMatchBox(m, t.currentRound === 2)).join('')}
+          </div>
+        `;
+      }
+
+      function setScreen(screenName) {
+        appState.screen = screenName;
+        document.getElementById('screen-setup').classList.toggle('hidden', screenName !== 'SETUP');
+        document.getElementById('screen-bracket').classList.toggle('hidden', screenName !== 'BRACKET');
+        document.getElementById('screen-pause').classList.toggle('hidden', screenName !== 'PAUSED');
+        document.getElementById('screen-gameover').classList.toggle('hidden', screenName !== 'GAMEOVER');
+
+        const showPauseBtn = screenName === 'PLAYING' || screenName === 'PAUSED';
+        document.getElementById('btn-pause').classList.toggle('hidden', !showPauseBtn);
+      }
+
+      function buildRosterGrids() {
+        const p1Grid = document.getElementById('p1-team-grid');
+        const p2Grid = document.getElementById('p2-team-grid');
+        p1Grid.innerHTML = '';
+        p2Grid.innerHTML = '';
+
+        TEAMS.forEach((team, idx) => {
+          // P1 Card
+          const c1 = document.createElement('div');
+          c1.className = `team-card ${appState.p1TeamIdx === idx ? 'selected-p1' : ''}`;
+          c1.innerHTML = `
+            <div class="team-swatch" style="background:${team.primary}; color:${team.textColor}; border-color:${team.secondary};">${team.short}</div>
+            <div class="team-card-name">${team.name}</div>
+          `;
+          c1.addEventListener('click', () => {
+            sfx.ensureContext();
+            sfx.playDribble();
+            appState.p1TeamIdx = idx;
+            if (appState.p2TeamIdx === idx) {
+              appState.p2TeamIdx = (idx + 1) % TEAMS.length;
+            }
+            updateRosterSelections();
+          });
+          p1Grid.appendChild(c1);
+
+          // P2 Card
+          const c2 = document.createElement('div');
+          c2.className = `team-card ${appState.p2TeamIdx === idx ? 'selected-p2' : ''}`;
+          c2.innerHTML = `
+            <div class="team-swatch" style="background:${team.primary}; color:${team.textColor}; border-color:${team.secondary};">${team.short}</div>
+            <div class="team-card-name">${team.name}</div>
+          `;
+          c2.addEventListener('click', () => {
+            sfx.ensureContext();
+            sfx.playDribble();
+            appState.p2TeamIdx = idx;
+            updateRosterSelections();
+          });
+          p2Grid.appendChild(c2);
+        });
+
+        updateRosterSelections();
+      }
+
+      function updateRosterSelections() {
+        const p1Team = TEAMS[appState.p1TeamIdx];
+        const p2Team = TEAMS[appState.p2TeamIdx];
+
+        document.querySelectorAll('#p1-team-grid .team-card').forEach((el, idx) => {
+          el.classList.toggle('selected-p1', idx === appState.p1TeamIdx);
+        });
+        document.querySelectorAll('#p2-team-grid .team-card').forEach((el, idx) => {
+          el.classList.toggle('selected-p2', idx === appState.p2TeamIdx);
+        });
+
+        document.getElementById('p1-star-name').textContent = `${p1Team.starName} #${p1Team.number}`;
+        document.getElementById('p1-supershot-name').textContent = p1Team.supershotName;
+
+        document.getElementById('p2-star-name').textContent = `${p2Team.starName} #${p2Team.number}`;
+        document.getElementById('p2-supershot-name').textContent = p2Team.supershotName;
+
+        const isTournament = appState.mode === '1P_TOURNAMENT';
+        const is2P = appState.mode === '2P_LOCAL';
+
+        document.getElementById('difficulty-group').style.opacity = is2P ? '0.4' : '1';
+        document.getElementById('difficulty-group').style.pointerEvents = is2P ? 'none' : 'auto';
+        document.getElementById('p2-roster-pane').style.opacity = isTournament ? '0.45' : '1';
+        document.getElementById('p2-roster-pane').style.pointerEvents = isTournament ? 'none' : 'auto';
+        document.getElementById('p2-role-badge').textContent = is2P
+          ? 'PLAYER 2 (RIGHT HOOP)'
+          : (isTournament ? 'TOURNAMENT BRACKET DRAW' : 'CPU OPPONENT (RIGHT HOOP)');
+      }
+
+      // Wire Mode & Difficulty Pills
+      document.querySelectorAll('#mode-selector .pill-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          sfx.ensureContext();
+          sfx.playDribble();
+          document.querySelectorAll('#mode-selector .pill-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.mode = btn.getAttribute('data-mode');
+          updateRosterSelections();
+        });
+      });
+
+      document.querySelectorAll('#diff-selector .pill-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          sfx.ensureContext();
+          sfx.playDribble();
+          document.querySelectorAll('#diff-selector .pill-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.difficulty = btn.getAttribute('data-diff');
+        });
+      });
+
+      // Tip-Off Button
+      document.getElementById('btn-tipoff').addEventListener('click', () => {
+        sfx.ensureContext();
+        if (appState.mode === '1P_TOURNAMENT') {
+          appState.tournament = new TournamentManager(appState.p1TeamIdx);
+          renderBracketUI();
+          setScreen('BRACKET');
+        } else {
+          startNewMatch(appState.p1TeamIdx, appState.p2TeamIdx);
+        }
+      });
+
+      // Tournament Bracket Buttons
+      document.getElementById('btn-bracket-play').addEventListener('click', () => {
+        sfx.ensureContext();
+        const t = appState.tournament;
+        if (!t || t.currentRound >= 3) {
+          appState.tournament = new TournamentManager(appState.p1TeamIdx);
+          renderBracketUI();
+          return;
+        }
+        const oppIdx = t.getNextOpponentIdx();
+        startNewMatch(appState.p1TeamIdx, oppIdx);
+      });
+
+      document.getElementById('btn-bracket-quit').addEventListener('click', () => {
+        setScreen('SETUP');
+      });
+
+      // Sound & Pause Controls
+      document.getElementById('btn-sound').addEventListener('click', () => {
+        const on = sfx.toggle();
+        document.getElementById('btn-sound').textContent = on ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+      });
+
+      document.getElementById('btn-pause').addEventListener('click', () => {
+        if (appState.screen === 'PLAYING') setScreen('PAUSED');
+        else if (appState.screen === 'PAUSED') setScreen('PLAYING');
+      });
+
+      document.getElementById('btn-resume').addEventListener('click', () => {
+        setScreen('PLAYING');
+      });
+
+      document.getElementById('btn-restart-match').addEventListener('click', () => {
+        if (match) {
+          const p1Idx = TEAMS.findIndex((t) => t.id === match.players[0].team.id);
+          const p2Idx = TEAMS.findIndex((t) => t.id === match.players[1].team.id);
+          startNewMatch(p1Idx, p2Idx);
+        }
+      });
+
+      document.getElementById('btn-quit-menu').addEventListener('click', () => {
+        match = null;
+        setScreen('SETUP');
+      });
+
+      // Post-Match Buttons
+      document.getElementById('btn-gameover-primary').addEventListener('click', () => {
+        sfx.ensureContext();
+        if (appState.mode === '1P_TOURNAMENT' && appState.tournament) {
+          const t = appState.tournament;
+          const p1Won = match && match.players[0].score > match.players[1].score;
+          if (!p1Won) {
+            appState.tournament = new TournamentManager(appState.p1TeamIdx);
+          }
+          renderBracketUI();
+          setScreen('BRACKET');
+        } else if (match) {
+          const p1Idx = TEAMS.findIndex((t) => t.id === match.players[0].team.id);
+          const p2Idx = TEAMS.findIndex((t) => t.id === match.players[1].team.id);
+          startNewMatch(p1Idx, p2Idx);
+        }
+      });
+
+      document.getElementById('btn-gameover-menu').addEventListener('click', () => {
+        match = null;
+        setScreen('SETUP');
+      });
+
+      /* =========================================================================
+         15. INITIALIZATION ON WINDOW LOAD
+         ========================================================================= */
+      window.onload = function () {
+        resizeCanvas();
+        buildRosterGrids();
+        setScreen('SETUP');
+        requestAnimationFrame(gameLoop);
+      };
+    })();
+  </script>
+</body>
+</html>
